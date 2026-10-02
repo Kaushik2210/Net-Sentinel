@@ -1,0 +1,16 @@
+# {$DOMAIN} may be a real hostname (automatic HTTPS via Let's Encrypt) or "localhost" (Caddy's local CA, for testing).
+{$DOMAIN} {
+	encode zstd gzip
+
+	@api path /api/* /health /docs /redoc /openapi.json
+	handle @api {
+		reverse_proxy api:8000
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+
+	# The web app sets its own CSP and frame headers; add transport security here.
+	header Strict-Transport-Security "max-age=31536000"
+}

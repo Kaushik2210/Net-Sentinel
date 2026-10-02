@@ -83,7 +83,7 @@ npm run dev
 
 Sign in with `admin`, `analyst` or `viewer` and the password you set in `.env`. Migrations run automatically at startup.
 On Windows, prefer `127.0.0.1` over `localhost` when calling the API directly from scripts (IPv6 fallback adds ~200 ms per connection).
-Docker and production notes: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+Docker, public (HTTPS, read-only) deployment and production notes: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## API
 
