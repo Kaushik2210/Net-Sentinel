@@ -119,3 +119,11 @@ export interface AnalystUser { username: string; display_name: string; role: Rol
 export interface AnalystAnswer {
   question: string; mode: string; insufficient: boolean; claims: { text: string; cites: string[] }[]; citations: string[]; notice: string;
 }
+
+export type IndicatorKind = "ip" | "domain" | "hash" | "url";
+export interface Indicator { id: string; kind: IndicatorKind; value: string; source: string; confidence: number; description: string; created_at: string }
+export interface IntelCheck { value: string; matched: boolean; providers_checked: string[]; hits: { kind: string; value: string; source: string; confidence: number; description: string }[] }
+export interface IntelMatch { indicator_id: string; kind: string; value: string; source: string; confidence: number; where: string; alert_ids: string[]; event_ids: string[] }
+export interface Recommendation {
+  id: string; incident_id: string; action: string; label: string; target: string; rationale: string; state: "proposed" | "simulated"; created_at: string; mode: string;
+}

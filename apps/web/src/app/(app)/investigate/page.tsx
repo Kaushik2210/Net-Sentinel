@@ -6,6 +6,7 @@ import { CyberCard } from "@/components/cyber/CyberCard";
 import { EvidencePanel } from "@/components/cyber/EvidencePanel";
 import { ThreatBadge } from "@/components/cyber/ThreatBadge";
 import { AnalystPanel } from "@/components/investigate/AnalystPanel";
+import { ResponsePanel } from "@/components/investigate/ResponsePanel";
 import { WorkflowPanel } from "@/components/investigate/WorkflowPanel";
 import { api } from "@/lib/api";
 import type { IncidentDetail, IncidentSummary } from "@/lib/types";
@@ -17,7 +18,7 @@ export default function InvestigatePage() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<IncidentDetail | null>(null);
   const [step, setStep] = useState(0);
-  const [tab, setTab] = useState<"evidence" | "analyst">("evidence");
+  const [tab, setTab] = useState<"evidence" | "analyst" | "response">("evidence");
 
   const loadList = useCallback(() => { api.incidents().then((p) => setList(p.items)).catch((e: Error) => setError(e.message)); }, []);
   const activeId = selectedId ?? list?.[0]?.id ?? null;
@@ -57,13 +58,14 @@ export default function InvestigatePage() {
 
         <CyberCard tone="info" bodyClassName="p-0" className="xl:self-start">
           <div role="tablist" className="flex border-b border-border text-[10px] uppercase tracking-[0.2em]">
-            {(["evidence", "analyst"] as const).map((t) => (
-              <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={cn("flex-1 px-3 py-2.5", tab === t ? "border-b-2 border-info text-info" : "text-muted hover:text-foreground")}>{t === "evidence" ? "Evidence" : "AI analyst"}</button>
+            {(["evidence", "analyst", "response"] as const).map((t) => (
+              <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={cn("flex-1 px-3 py-2.5", tab === t ? "border-b-2 border-info text-info" : "text-muted hover:text-foreground")}>{t === "evidence" ? "Evidence" : t === "analyst" ? "AI analyst" : "Response"}</button>
             ))}
           </div>
           {!shown ? <p className="p-4 text-[11px] text-muted">Select an incident.</p>
             : tab === "evidence" ? (current ? <EvidencePanel step={current} techniques={shown.techniques} /> : <p className="p-4 text-[11px] text-muted">No steps.</p>)
-            : <AnalystPanel key={shown.id} incidentId={shown.id} />}
+            : tab === "analyst" ? <AnalystPanel key={shown.id} incidentId={shown.id} />
+            : <div className="p-3"><ResponsePanel key={shown.id} incidentId={shown.id} /></div>}
         </CyberCard>
       </div>
     </div>

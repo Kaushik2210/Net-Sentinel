@@ -16,7 +16,7 @@ const ITEMS: Item[] = [
   { href: "/investigate", label: "Investigate", icon: FileSearch },
   { href: "/replay", label: "PCAP replay", icon: Radar },
   { href: "/mitre", label: "MITRE ATT&CK", icon: Crosshair },
-  { href: "/threat-intel", label: "Threat intel", icon: Shield, phase: 9 },
+  { href: "/threat-intel", label: "Threat intel", icon: Shield },
   { href: "/research", label: "Research", icon: Telescope, phase: 10 },
 ];
 

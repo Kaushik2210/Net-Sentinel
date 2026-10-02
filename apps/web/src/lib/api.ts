@@ -1,4 +1,4 @@
-import type { AnalystAnswer, AnalystUser, AuditEntry, Note, WorkflowStatus, Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, SimulationResult, Summary, Topology, User } from "./types";
+import type { Indicator, IndicatorKind, IntelCheck, IntelMatch, Recommendation, AnalystAnswer, AnalystUser, AuditEntry, Note, WorkflowStatus, Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, SimulationResult, Summary, Topology, User } from "./types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -93,6 +93,14 @@ export const api = {
     request<{ id: string; status: string; assignee: string | null }>(`/api/v1/investigations/${id}`, { method: "PATCH", body: JSON.stringify(patch) }),
   ask: (target: { incident_id?: string; device_id?: string }, question: string) =>
     request<AnalystAnswer>("/api/v1/analyst/ask", { method: "POST", body: JSON.stringify({ ...target, question }) }),
+  indicators: (kind?: string) => request<Page<Indicator>>(`/api/v1/threat-intel?limit=100${kind ? `&kind=${kind}` : ""}`),
+  addIndicator: (b: { kind: IndicatorKind; value: string; description?: string; confidence?: number; source?: string }) =>
+    request<Indicator>("/api/v1/threat-intel", { method: "POST", body: JSON.stringify(b) }),
+  deleteIndicator: (id: string) => request<void>(`/api/v1/threat-intel/${id}`, { method: "DELETE" }),
+  checkIndicator: (kind: IndicatorKind, value: string) => request<IntelCheck>("/api/v1/threat-intel/check", { method: "POST", body: JSON.stringify({ kind, value }) }),
+  intelMatches: () => request<IntelMatch[]>("/api/v1/threat-intel/matches"),
+  recommendations: (incidentId: string) => request<Recommendation[]>(`/api/v1/response/incidents/${incidentId}`),
+  simulateResponse: (recId: string) => request<{ recommendation: Recommendation; message: string; real_changes_made: boolean }>(`/api/v1/response/${recId}/simulate`, { method: "POST" }),
   events: (limit = 50) => request<NetworkEvent[]>(`/api/v1/events?limit=${limit}`),
 };
 
