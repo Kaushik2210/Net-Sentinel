@@ -16,7 +16,7 @@ anomalies and ML anomalies are never conflated.
 
 ## Status
 
-Phase 1 of 12 is complete. Honest feature matrix:
+Phases 1–2 of 12 are complete. Honest feature matrix:
 
 | Capability | State |
 |---|---|
@@ -25,7 +25,7 @@ Phase 1 of 12 is complete. Honest feature matrix:
 | Relational schema + Alembic migrations (all planned entities) | Implemented |
 | Simulated enterprise network (47 devices) and live telemetry over WebSocket | Implemented |
 | Behavioral baselines and transparent risk scoring | Implemented |
-| React Flow network explorer, device intelligence | Phase 2 |
+| React Flow network explorer, device intelligence panel | Implemented |
 | Detection engine, ML anomaly detection, correlation, MITRE | Phases 3–6 |
 | PCAP replay, investigation workspace, evidence-bound assistant | Phases 7–8 |
 | Threat intel, response simulation, research mode, demo mode | Phases 9–12 |

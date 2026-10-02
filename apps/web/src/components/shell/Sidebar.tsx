@@ -11,7 +11,7 @@ interface Item { href: string; label: string; icon: LucideIcon; phase?: number }
 // but are inert and tagged with the phase that delivers them.
 const ITEMS: Item[] = [
   { href: "/dashboard", label: "Command center", icon: Activity },
-  { href: "/network", label: "Network twin", icon: Network, phase: 2 },
+  { href: "/network", label: "Network twin", icon: Network },
   { href: "/incidents", label: "Incidents", icon: GitBranch, phase: 5 },
   { href: "/investigate", label: "Investigate", icon: FileSearch, phase: 8 },
   { href: "/replay", label: "PCAP replay", icon: Radar, phase: 7 },
