@@ -1,0 +1,39 @@
+# Run from the repo root:  docker compose -f infrastructure/docker/docker-compose.yml --env-file .env up --build
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: netsentinel
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: netsentinel
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U netsentinel"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ../../apps/api
+    environment:
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      DATABASE_URL: postgresql+psycopg://netsentinel:${POSTGRES_PASSWORD}@db:5432/netsentinel
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
+      SEED_ANALYST_PASSWORD: ${SEED_ANALYST_PASSWORD:-}
+      SEED_VIEWER_PASSWORD: ${SEED_VIEWER_PASSWORD:-}
+      CORS_ORIGINS: http://localhost:3000
+      TELEMETRY_MODE: ${TELEMETRY_MODE:-simulation}
+    depends_on:
+      db: { condition: service_healthy }
+    ports: ["8000:8000"]
+
+  web:
+    build:
+      context: ../../apps/web
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    depends_on: [api]
+    ports: ["3000:3000"]
+
+volumes:
+  pgdata:

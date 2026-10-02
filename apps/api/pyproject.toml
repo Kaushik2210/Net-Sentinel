@@ -1,0 +1,23 @@
+[project]
+name = "netsentinel-api"
+version = "0.1.0"
+description = "NetSentinel API: explainable network digital twin and security investigation backend"
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 130
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+ignore = ["S101", "B008"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106"]
+"app/services/topology.py" = ["E501", "S311"]  # synthetic-data tables; non-cryptographic PRNG
+"app/services/simulation.py" = ["S311"]
+"alembic/*" = ["E501", "I001", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
