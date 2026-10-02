@@ -1,4 +1,4 @@
-import type { Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, SimulationResult, Summary, Topology, User } from "./types";
+import type { AnalystAnswer, AnalystUser, AuditEntry, Note, WorkflowStatus, Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, SimulationResult, Summary, Topology, User } from "./types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -85,6 +85,14 @@ export const api = {
     // request() omits Content-Type for FormData so the browser sets the multipart boundary.
     return request<ReplaySummary>("/api/v1/replay/upload", { method: "POST", body });
   },
+  notes: (id: string) => request<Note[]>(`/api/v1/investigations/${id}/notes`),
+  addNote: (id: string, body: string) => request<Note>(`/api/v1/investigations/${id}/notes`, { method: "POST", body: JSON.stringify({ body }) }),
+  auditTrail: (id: string) => request<AuditEntry[]>(`/api/v1/investigations/${id}/audit`),
+  analysts: () => request<AnalystUser[]>("/api/v1/investigations/analysts"),
+  updateWorkflow: (id: string, patch: { status?: WorkflowStatus; assignee?: string | null }) =>
+    request<{ id: string; status: string; assignee: string | null }>(`/api/v1/investigations/${id}`, { method: "PATCH", body: JSON.stringify(patch) }),
+  ask: (target: { incident_id?: string; device_id?: string }, question: string) =>
+    request<AnalystAnswer>("/api/v1/analyst/ask", { method: "POST", body: JSON.stringify({ ...target, question }) }),
   events: (limit = 50) => request<NetworkEvent[]>(`/api/v1/events?limit=${limit}`),
 };
 

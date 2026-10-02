@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from sqlalchemy import func, select
 
 from app.core.deps import Analyst, CurrentUser, DbSession, client_ip
-from app.models import Alert, Evidence, Incident, IncidentEvent, MITRETechnique
+from app.models import Alert, Evidence, Incident, IncidentEvent, MITRETechnique, User
 from app.schemas.common import ORM, Factor, Page, UTCDatetime
 from app.services import audit
 from app.services.incidents import run_correlation
@@ -23,6 +23,7 @@ class IncidentSummary(ORM):
     last_seen: UTCDatetime
     summary: str
     classification: str = "CORRELATED"
+    assignee: str | None = None
 
 
 class StepOut(ORM):
@@ -69,6 +70,11 @@ class IncidentDetail(IncidentSummary):
     evidence_count: int
 
 
+def _summaries(db, rows) -> list["IncidentSummary"]:
+    names = {u.id: u.username for u in db.scalars(select(User).where(User.id.in_([r.assignee_id for r in rows if r.assignee_id])))} if rows else {}
+    return [IncidentSummary.model_validate(r).model_copy(update={"assignee": names.get(r.assignee_id)}) for r in rows]
+
+
 @router.get("", response_model=Page[IncidentSummary])
 def list_incidents(
     _: CurrentUser,
@@ -85,7 +91,7 @@ def list_incidents(
         stmt = stmt.where(Incident.severity == severity)
     total = db.scalar(select(func.count()).select_from(stmt.subquery())) or 0
     rows = db.scalars(stmt.order_by(Incident.risk_score.desc(), Incident.last_seen.desc()).limit(limit).offset(offset)).all()
-    return Page(items=[IncidentSummary.model_validate(r) for r in rows], total=total, limit=limit, offset=offset)
+    return Page(items=_summaries(db, rows), total=total, limit=limit, offset=offset)
 
 
 @router.get("/{incident_id}", response_model=IncidentDetail)
@@ -120,7 +126,7 @@ def get_incident(incident_id: str, _: CurrentUser, db: DbSession):
     ids = sorted({t for s in steps for t in s.mitre})
     techniques = db.scalars(select(MITRETechnique).where(MITRETechnique.id.in_(ids))).all() if ids else []
     return IncidentDetail(
-        **IncidentSummary.model_validate(inc).model_dump(), risk_factors=inc.risk_factors, steps=steps, supporting=supporting,
+        **_summaries(db, [inc])[0].model_dump(), risk_factors=inc.risk_factors, steps=steps, supporting=supporting,
         techniques=[TechniqueOut.model_validate(t) for t in techniques],
         evidence_count=sum(len(v) for v in events_by_alert.values()),
     )
@@ -130,4 +136,4 @@ def get_incident(incident_id: str, _: CurrentUser, db: DbSession):
 async def correlate_now(request: Request, user: Analyst, db: DbSession):
     created = await asyncio.to_thread(run_correlation, db)
     audit.record(db, user.username, "incidents.correlate", "", client_ip(request), incidents=len(created))
-    return [IncidentSummary.model_validate(i) for i in created]
+    return _summaries(db, created)

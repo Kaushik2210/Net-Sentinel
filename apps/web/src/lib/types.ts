@@ -62,7 +62,7 @@ export interface MlScore {
 
 export interface IncidentSummary {
   id: string; title: string; status: string; severity: Severity; risk_score: number;
-  first_seen: string; last_seen: string; summary: string; classification: "CORRELATED";
+  first_seen: string; last_seen: string; summary: string; classification: "CORRELATED"; assignee?: string | null;
 }
 export interface IncidentStep {
   position: number; stage: string; alert_id: string | null; timestamp: string; source: string; destination: string;
@@ -110,4 +110,12 @@ export interface ReplayResult {
     risk_score: number; risk_factors: Factor[]; techniques: Technique[];
     steps: { position: number; stage: string; alert_id: string; link_reason: string; link_confidence: number; offset_s: number }[];
   };
+}
+
+export type WorkflowStatus = "open" | "investigating" | "resolved" | "false_positive" | "escalated";
+export interface Note { id: string; author: string; body: string; created_at: string }
+export interface AuditEntry { ts: string; actor: string; action: string; detail: Record<string, unknown> }
+export interface AnalystUser { username: string; display_name: string; role: Role }
+export interface AnalystAnswer {
+  question: string; mode: string; insufficient: boolean; claims: { text: string; cites: string[] }[]; citations: string[]; notice: string;
 }
