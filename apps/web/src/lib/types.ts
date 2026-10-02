@@ -53,3 +53,9 @@ export interface Alert {
 export interface EvidenceItem { id: string; kind: "facts" | "event"; event_id: string | null; summary: string; data: Record<string, unknown> }
 export interface AlertDetail extends Alert { evidence: EvidenceItem[] }
 export interface SimulationResult { events_injected: number; alerts_created: Alert[] }
+
+export interface MlContribution { feature: string; label: string; value: number; baseline_mean: number; z: number }
+export interface MlScore {
+  entity: string; hostname: string | null; score: number; risk: number; is_anomaly: boolean;
+  contributions: MlContribution[]; classification: string; note: string;
+}

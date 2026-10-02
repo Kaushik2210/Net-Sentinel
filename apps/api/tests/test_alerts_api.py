@@ -43,7 +43,12 @@ def test_attack_simulation_produces_explained_alerts_then_dedupes_and_resets(cli
     assert body["events_injected"] > 100
     types = {a["event_type"] for a in body["alerts_created"]}
     assert {"credential_attack", "lateral_movement", "possible_exfiltration"} <= types
-    assert all(a["detection_class"] == "RULE" for a in body["alerts_created"])
+    by_class = {}
+    for a in body["alerts_created"]:
+        by_class.setdefault(a["detection_class"], []).append(a)
+    assert {"RULE", "ML", "BEHAVIORAL"} <= set(by_class)  # provenance is never merged
+    assert all(a["mitre_techniques"] == [] and a["event_type"] == "ml_anomaly" for a in by_class["ML"])
+    assert all(a["event_type"] == "behavior_deviation" for a in by_class["BEHAVIORAL"])
 
     alert_id = next(a["id"] for a in body["alerts_created"] if a["event_type"] == "credential_attack")
     detail = client.get(f"/api/v1/alerts/{alert_id}", headers=analyst).json()

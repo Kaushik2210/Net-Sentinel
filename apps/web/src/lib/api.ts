@@ -1,4 +1,4 @@
-import type { Alert, AlertDetail, DeviceDetail, DeviceSummary, NetworkEvent, Page, SimulationResult, Summary, Topology, User } from "./types";
+import type { Alert, AlertDetail, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, SimulationResult, Summary, Topology, User } from "./types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -72,6 +72,7 @@ export const api = {
   alert: (id: string) => request<AlertDetail>(`/api/v1/alerts/${id}`),
   simulateAttack: () => request<SimulationResult>("/api/v1/detections/simulate-attack", { method: "POST" }),
   resetSimulation: () => request<void>("/api/v1/detections/reset-simulation", { method: "POST" }),
+  mlScore: (ip: string) => request<MlScore[]>(`/api/v1/analytics/ml/scores?ip=${encodeURIComponent(ip)}`),
   events: (limit = 50) => request<NetworkEvent[]>(`/api/v1/events?limit=${limit}`),
 };
 

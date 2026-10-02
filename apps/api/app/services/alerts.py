@@ -7,7 +7,8 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.detection import DetectionEngine, EventRecord, Finding, registry
-from app.models import Alert, DetectionRule, Evidence, NetworkEvent
+from app.models import Alert, DetectionRule, Device, Evidence, NetworkEvent
+from app.services.behavior import severity_for_risk
 from app.services.bus import bus
 
 log = logging.getLogger("netsentinel.detect")
@@ -22,7 +23,7 @@ def _aware(ts: datetime) -> datetime:
 def to_record(e: NetworkEvent) -> EventRecord:
     return EventRecord(
         id=e.id, ts=_aware(e.ts), src_ip=e.src_ip, dst_ip=e.dst_ip, dst_port=e.dst_port, protocol=e.protocol,
-        event_type=e.event_type, bytes_sent=e.bytes_sent, bytes_received=e.bytes_received, attributes=e.attributes or {},
+        event_type=e.event_type, bytes_sent=e.bytes_sent, bytes_received=e.bytes_received, duration_ms=e.duration_ms, attributes=e.attributes or {},
     )
 
 
@@ -61,13 +62,34 @@ def alert_payload(a: Alert) -> dict:
     }
 
 
+BEHAVIORAL_MIN_RISK = 50
+
+
+def behavioral_findings(db: Session) -> list[Finding]:
+    """Devices whose profile deviates strongly from baseline. Class BEHAVIORAL: no event rule fired."""
+    out = []
+    now = datetime.now(UTC)
+    for d in db.scalars(select(Device).where(Device.risk_score >= BEHAVIORAL_MIN_RISK)):
+        top = ", ".join(f"{f['label']} (+{f['points']})" for f in d.risk_factors[:3])
+        out.append(
+            Finding(
+                detector="BehaviorBaselineScorer", detection_class="BEHAVIORAL", event_type="behavior_deviation",
+                severity=severity_for_risk(d.risk_score), confidence=round(min(0.95, 0.5 + d.risk_score / 200), 2),
+                source=d.ip, destination=d.hostname, timestamp=now,
+                explanation=f"{d.hostname} deviates from its behavioral baseline (risk {d.risk_score}/100): {top}.",
+                evidence_ids=[], mitre_techniques=[], facts={"risk_score": d.risk_score, "factors": d.risk_factors},
+            )
+        )
+    return out
+
+
 def run_detection_cycle(db: Session, window_seconds: int = 600) -> list[Alert]:
     """Detect over the recent window; persist only findings not already alerted recently."""
     since = datetime.now(UTC) - timedelta(seconds=window_seconds)
     rows = db.scalars(
         select(NetworkEvent).where(NetworkEvent.ts >= since).order_by(NetworkEvent.ts.desc()).limit(MAX_WINDOW_EVENTS)
     ).all()
-    findings = build_engine(db).run([to_record(r) for r in rows])
+    findings = build_engine(db).run([to_record(r) for r in rows]) + behavioral_findings(db)
     if not findings:
         return []
 

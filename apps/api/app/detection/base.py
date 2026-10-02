@@ -32,6 +32,7 @@ class EventRecord:
     event_type: str
     bytes_sent: int = 0
     bytes_received: int = 0
+    duration_ms: int = 0
     attributes: dict = field(default_factory=dict)
 
 

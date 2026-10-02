@@ -6,7 +6,7 @@ import { StatusDot } from "@/components/cyber/SeverityIndicator";
 import { ThreatBadge } from "@/components/cyber/ThreatBadge";
 import { RiskFactors, ThreatScore } from "@/components/cyber/ThreatScore";
 import { api } from "@/lib/api";
-import type { DeviceDetail } from "@/lib/types";
+import type { DeviceDetail, MlScore } from "@/lib/types";
 import { cn, formatBytes, formatClock, timeAgo } from "@/lib/utils";
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
@@ -28,6 +28,7 @@ interface Props { deviceId: string; onClose: () => void; onSelect: (id: string) 
 export function DeviceIntelligence({ deviceId, onClose, onSelect }: Props) {
   const [d, setD] = useState<DeviceDetail | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [ml, setMl] = useState<{ id: string; score: MlScore | null } | null>(null);
 
   useEffect(() => {
     let live = true;
@@ -37,6 +38,16 @@ export function DeviceIntelligence({ deviceId, onClose, onSelect }: Props) {
     return () => { live = false; };
   }, [deviceId]);
 
+  useEffect(() => {
+    if (!d || d.id !== deviceId) return;
+    let live = true;
+    api.mlScore(d.ip)
+      .then((r) => live && setMl({ id: deviceId, score: r[0] ?? null }))
+      .catch(() => live && setMl({ id: deviceId, score: null }));
+    return () => { live = false; };
+  }, [d, deviceId]);
+
+  const mlScore = ml && ml.id === deviceId ? ml.score : null;
   const ready = d && d.id === deviceId ? d : null;
 
   return (
@@ -90,6 +101,23 @@ export function DeviceIntelligence({ deviceId, onClose, onSelect }: Props) {
 
             <Block title="Why this risk score">
               <RiskFactors factors={ready.risk_factors} total={ready.risk_score} />
+            </Block>
+
+            <Block title="ML anomaly · Isolation Forest">
+              {!mlScore ? <p className="text-[11px] text-muted">Insufficient recent events to score this device.</p> : (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className="border border-info/40 px-1.5 py-0.5 text-[9px] tracking-widest text-info">ML ANOMALY SCORE</span>
+                    <span className={mlScore.is_anomaly ? "text-danger" : "text-success"}>{mlScore.risk}/100 · {mlScore.is_anomaly ? "outlier" : "within baseline"}</span>
+                  </div>
+                  <ul className="space-y-0.5 text-[10px]">
+                    {mlScore.contributions.map((c) => (
+                      <li key={c.feature} className="flex justify-between gap-2"><span className="text-muted">{c.label}</span><span>{c.value} <span className="text-muted">(baseline {c.baseline_mean}, z {c.z > 0 ? "+" : ""}{c.z})</span></span></li>
+                    ))}
+                  </ul>
+                  <p className="text-[10px] text-muted">{mlScore.note}</p>
+                </div>
+              )}
             </Block>
 
             <Block title="Historical anomalies">

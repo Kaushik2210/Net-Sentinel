@@ -19,6 +19,7 @@ from app.core.logging import configure_logging
 from app.core.middleware import SecurityHeadersMiddleware
 from app.core.ratelimit import limiter
 from app.db.session import SessionLocal
+from app.ml.service import get_model
 from app.services.bus import bus
 from app.services.detection_loop import run_detection_loop
 from app.services.ingest import run_ingest
@@ -42,6 +43,7 @@ async def lifespan(_: FastAPI):
         seed_users(db)
         seed_network(db)
         seed_detection(db)
+    await asyncio.to_thread(get_model)  # train once at startup (~2 s) so the first request is fast
     tasks = [asyncio.create_task(run_ingest(), name="telemetry-ingest"), asyncio.create_task(run_detection_loop(), name="detection-loop")]
     log.info("NetSentinel %s started (env=%s, telemetry=%s)", settings.app_version, settings.environment, settings.telemetry_mode)
     try:
