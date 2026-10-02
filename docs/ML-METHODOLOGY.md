@@ -46,6 +46,13 @@ while a benign tail sample scored 76. The effect size separates them cleanly ins
 benign windows (three unseen seeds) the largest |z| was 4.6 and none passed the gate, while the attacker's
 largest |z| was in the tens of thousands.
 
+## Warm-up
+
+Features are rates over a 10-minute window and the model was trained on full windows. Scoring a window that has barely begun makes every host look far quieter than baseline
+and produced false ML alerts in the first minutes after startup (found while running the stack in Docker). Two guards now apply: scoring needs the *data* to span at least 75% of the
+window, and live scoring additionally needs ingestion to have been running for 75% of the window (back-dated events such as a replayed or injected scenario can make the data span look full
+while benign traffic is only minutes old). During warm-up (about 7.5 minutes after start) ML alerts and scores are withheld; rule and behavioral detection are unaffected. Regression tests cover both.
+
 ## Behavioral vs ML
 
 Two different things, shown with different labels:

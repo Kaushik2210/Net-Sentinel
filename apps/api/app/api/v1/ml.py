@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 from sqlalchemy import select
 
 from app.core.deps import CurrentUser, DbSession
-from app.ml.service import get_model, score_events
+from app.ml.service import get_model, is_warm, score_events
 from app.models import Device, NetworkEvent
 from app.schemas.common import ORM
 from app.services.alerts import MAX_WINDOW_EVENTS, to_record
@@ -49,6 +49,10 @@ async def model_info(_: CurrentUser):
 
 @router.get("/scores", response_model=list[ScoreOut])
 async def scores(_: CurrentUser, db: DbSession, ip: str | None = None):
+    if not is_warm():
+        if ip is not None:
+            raise HTTPException(404, "ML warm-up: not enough live history yet")
+        return []
     since = datetime.now(UTC) - timedelta(minutes=10)
     rows = db.scalars(select(NetworkEvent).where(NetworkEvent.ts >= since).limit(MAX_WINDOW_EVENTS)).all()
     results = await asyncio.to_thread(score_events, [to_record(r) for r in rows])

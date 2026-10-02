@@ -1,6 +1,7 @@
 """Training and scoring entry points. The model is trained lazily on synthetic benign telemetry."""
 
 import threading
+import time
 from datetime import UTC, datetime, timedelta
 
 import pandas as pd
@@ -13,6 +14,19 @@ from app.services.simulation import SimulationSource
 
 _lock = threading.Lock()
 _model: AnomalyModel | None = None
+# Live-ingestion warm-up. Back-dated events (attack scenarios, replays) can make the *data* span look full
+# while benign traffic has only existed for a few minutes, so live scoring also requires enough uptime.
+_ingest_started: float | None = None
+
+
+def mark_ingest_started() -> None:
+    global _ingest_started
+    _ingest_started = time.monotonic()
+
+
+def is_warm() -> bool:
+    """True when live scoring is meaningful. With no live ingestion running (idle, tests) there is nothing to wait for."""
+    return _ingest_started is None or (time.monotonic() - _ingest_started) >= MIN_COVERAGE * WINDOW_SECONDS
 
 TRAIN_RUNS = 12  # independent benign 10-minute windows, each contributing one row per active device
 EVENT_RATE = 4.0  # events/second, matching the default simulation rate
@@ -52,9 +66,16 @@ def get_model(seed: int = 1337) -> AnomalyModel:
         return _model
 
 
+# The model is trained on full 10-minute windows and rates are normalised by the window length. Scoring a
+# window that has barely begun makes every host look far quieter than baseline, so wait until it is mostly full.
+MIN_COVERAGE = 0.75
+
+
 def score_events(events: list[EventRecord]) -> list[AnomalyResult]:
     if not events:
         return []
     latest = max(e.ts for e in events)
+    if (latest - min(e.ts for e in events)).total_seconds() < MIN_COVERAGE * WINDOW_SECONDS:
+        return []  # warm-up: not enough history to compare against full-window baselines
     window = [e for e in events if e.ts >= latest - timedelta(seconds=WINDOW_SECONDS)]
     return get_model().score(extract_features(window))

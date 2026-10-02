@@ -16,8 +16,9 @@ docker compose -f infrastructure/docker/docker-compose.yml --env-file .env up --
 
 Services: `db` (PostgreSQL 16, health-checked), `api` (port 8000, non-root user), `web` (port 3000). Compose refuses to start without `POSTGRES_PASSWORD` and `JWT_SECRET`.
 
-> **Status: untested.** The Dockerfiles and compose file were written but never built or run (Docker was not available in the development environment),
-> and the migrations were only exercised on SQLite. Expect to fix small issues on first run, and verify the migration on PostgreSQL.
+> **Status: validated once, locally.** Built and run on Docker Desktop (Engine 29, Compose v5) with PostgreSQL 16: images build, the `db` health check passes, migrations apply on
+> PostgreSQL, and the stack was exercised end to end (login, attack simulation, correlation, analyst, response recommendations, PCAP replay, MITRE, research run, UI under the production CSP).
+> This was a single manual run, not CI. Running it on PostgreSQL also exposed the ML warm-up bug described in `docs/ML-METHODOLOGY.md`.
 
 `NEXT_PUBLIC_API_URL` is baked into the web image at build time (build arg), so rebuild the image if the API's public address changes.
 

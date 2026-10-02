@@ -7,6 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.detection import DetectionEngine, EventRecord, Finding, registry
+from app.ml.service import is_warm
 from app.models import Alert, DetectionRule, Device, Evidence, NetworkEvent
 from app.services.behavior import severity_for_risk
 from app.services.bus import bus
@@ -90,6 +91,8 @@ def run_detection_cycle(db: Session, window_seconds: int = 600) -> list[Alert]:
         select(NetworkEvent).where(NetworkEvent.ts >= since).order_by(NetworkEvent.ts.desc()).limit(MAX_WINDOW_EVENTS)
     ).all()
     findings = build_engine(db).run([to_record(r) for r in rows]) + behavioral_findings(db)
+    if not is_warm():
+        findings = [f for f in findings if f.detection_class != "ML"]  # ML warm-up: see app/ml/service.py
     if not findings:
         return []
 

@@ -9,6 +9,7 @@ from sqlalchemy import delete, func, select
 
 from app.core.config import get_settings
 from app.db.session import SessionLocal
+from app.ml.service import mark_ingest_started
 from app.models import Device, NetworkEvent
 from app.services.bus import bus
 from app.services.simulation import SimulationSource
@@ -58,6 +59,7 @@ async def run_ingest() -> None:
         log.warning("no devices in database; simulation source not started")
         return
     source = SimulationSource(devices, s.simulation_seed)
+    mark_ingest_started()
     interval = 1.0 / max(s.simulation_events_per_second, 0.1)
     batch: list[dict] = []
     last_flush = last_prune = asyncio.get_running_loop().time()

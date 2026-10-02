@@ -48,6 +48,21 @@ telemetry source ─▶ normalized events ─▶ detectors (rule / behavioral / 
 FastAPI + SQLAlchemy backend (SQLite for development, PostgreSQL for deployment), Next.js console, WebSocket for live events and alerts.
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
+## Screenshots
+
+| | |
+|---|---|
+| ![Landing page](docs/screenshots/01-landing.jpg) | ![Command center](docs/screenshots/02-dashboard.jpg) |
+| Landing page with the animated topology | Command center: metrics, topology, risk breakdown |
+| ![Network twin](docs/screenshots/03-network-device.jpg) | ![Attack chain](docs/screenshots/04-incident-chain.jpg) |
+| Network digital twin and device intelligence | Reconstructed attack chain with MITRE IDs |
+| ![MITRE](docs/screenshots/05-mitre.jpg) | ![Demo](docs/screenshots/06-demo-running.jpg) |
+| MITRE ATT&CK matrix and technique detail | Guided demo mid-attack (lateral movement) |
+| ![Demo finale](docs/screenshots/07-demo-finale.jpg) | ![Investigation](docs/screenshots/08-investigate-analyst.jpg) |
+| Demo finale: incident reconstructed | Investigation workspace with the evidence-bound analyst |
+| ![Research](docs/screenshots/09-research.jpg) | |
+| Research mode: rule vs ML vs hybrid (synthetic benchmark) | |
+
 ## Quick start (local)
 
 Requirements: Python 3.11+, Node 22+.
@@ -101,7 +116,8 @@ Scapy, pandas, scikit-learn, pytest, Vitest.
 - PCAP analysis is flow-level and IPv4-only; authentication outcomes on encrypted protocols are inferred from flow shape and labelled as inferred.
 - The ML model trains on a homogeneous simulated baseline; the analyst is deterministic by design; response actions are simulated only.
 - In-process event bus, rate limiting and login throttle (single worker); session token held in `sessionStorage`; not independently audited.
-- Docker files are provided but have not been validated in CI. Details in [docs/SECURITY.md](docs/SECURITY.md).
+- Docker was validated once by hand (images, PostgreSQL migrations, end-to-end use) but there is no CI. Details in [docs/SECURITY.md](docs/SECURITY.md).
+- ML scoring is withheld for ~7.5 minutes after startup while its 10-minute window fills.
 
 ## Future work
 
