@@ -1,4 +1,4 @@
-import type { Alert, AlertDetail, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, SimulationResult, Summary, Topology, User } from "./types";
+import type { Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, SimulationResult, Summary, Topology, User } from "./types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -32,9 +32,8 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     res = await fetch(`${API_URL}${path}`, {
       ...init,
       headers: {
-        "Content-Type": "application/json",
+        ...(init.body instanceof FormData ? {} : { "Content-Type": "application/json" }),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...init.headers,
       },
     });
   } catch {
@@ -77,6 +76,15 @@ export const api = {
   incident: (id: string) => request<IncidentDetail>(`/api/v1/incidents/${id}`),
   mitre: () => request<MitreMatrix>("/api/v1/mitre"),
   technique: (id: string) => request<TechniqueDetail>(`/api/v1/mitre/${encodeURIComponent(id)}`),
+  replays: () => request<ReplaySummary[]>("/api/v1/replay"),
+  replay: (id: string) => request<{ summary: ReplaySummary; result: ReplayResult }>(`/api/v1/replay/${id}`),
+  replaySample: () => request<ReplaySummary>("/api/v1/replay/sample", { method: "POST" }),
+  uploadPcap: (file: File) => {
+    const body = new FormData();
+    body.append("file", file);
+    // request() omits Content-Type for FormData so the browser sets the multipart boundary.
+    return request<ReplaySummary>("/api/v1/replay/upload", { method: "POST", body });
+  },
   events: (limit = 50) => request<NetworkEvent[]>(`/api/v1/events?limit=${limit}`),
 };
 

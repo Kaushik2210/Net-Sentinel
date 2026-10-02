@@ -14,7 +14,7 @@ const ITEMS: Item[] = [
   { href: "/network", label: "Network twin", icon: Network },
   { href: "/incidents", label: "Incidents", icon: GitBranch },
   { href: "/investigate", label: "Investigate", icon: FileSearch, phase: 8 },
-  { href: "/replay", label: "PCAP replay", icon: Radar, phase: 7 },
+  { href: "/replay", label: "PCAP replay", icon: Radar },
   { href: "/mitre", label: "MITRE ATT&CK", icon: Crosshair },
   { href: "/threat-intel", label: "Threat intel", icon: Shield, phase: 9 },
   { href: "/research", label: "Research", icon: Telescope, phase: 10 },

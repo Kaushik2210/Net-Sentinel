@@ -17,6 +17,8 @@ ignore = ["S101", "B008"]
 "app/services/topology.py" = ["E501", "S311"]  # synthetic-data tables; non-cryptographic PRNG
 "app/services/simulation.py" = ["S311"]
 "app/services/scenarios.py" = ["S311"]
+"app/replay/engine.py" = ["E501"]
+"app/ingest/sample.py" = ["S311"]
 "alembic/*" = ["E501", "I001", "UP"]
 
 [tool.pytest.ini_options]

@@ -87,3 +87,27 @@ export interface TechniqueRelatedAlert {
   chain_position: number | null; chain_length: number | null; stage: string | null;
 }
 export interface TechniqueDetail extends TechniqueCell { tactic: string; alerts: TechniqueRelatedAlert[]; evidence_event_ids: string[] }
+
+export interface ReplaySummary {
+  id: string; filename: string; sha256: string; status: string; packet_count: number; duration_s: number;
+  alert_count: number; created_at: string; error: string | null;
+}
+export interface ReplayHost { ip: string; internal: boolean; first_s: number; events: number }
+export interface ReplayEdge { src: string; dst: string; first_s: number; count: number; bytes: number }
+export interface ReplayFrame { t: number; events: number; alerts: number; chain: number; threat: number; new_alerts: string[] }
+export interface ReplayAlert {
+  id: string; detected_offset_s: number; first_event_offset_s: number; source: string; destination: string; event_type: string;
+  detection_class: DetectionClassKey; severity: Severity; confidence: number; detector: string; mitre: string[];
+  explanation: string; facts: Record<string, unknown>; evidence_event_ids: string[];
+}
+export interface ReplayResult {
+  empty: boolean; duration_s: number; start?: string; end?: string; hosts: ReplayHost[]; edges: ReplayEdge[];
+  event_types: string[]; events: [number, number, number, number, number, number][]; events_truncated?: boolean;
+  frames: ReplayFrame[]; alerts: ReplayAlert[];
+  settings: { overrides: Record<string, Record<string, unknown>>; excluded_detectors?: string[] };
+  ingest?: { packets: number; flows: number; events: number; heuristics: string; truncated: boolean; notes: string[] };
+  incident: null | {
+    risk_score: number; risk_factors: Factor[]; techniques: Technique[];
+    steps: { position: number; stage: string; alert_id: string; link_reason: string; link_confidence: number; offset_s: number }[];
+  };
+}

@@ -16,7 +16,7 @@ anomalies and ML anomalies are never conflated.
 
 ## Status
 
-Phases 1–6 of 12 are complete. Honest feature matrix:
+Phases 1–7 of 12 are complete. Honest feature matrix:
 
 | Capability | State |
 |---|---|
@@ -30,7 +30,8 @@ Phases 1–6 of 12 are complete. Honest feature matrix:
 | Isolation Forest anomaly detection (labelled ML), behavioral alerts | Implemented |
 | Alert correlation, incidents, animated attack-chain reconstruction, explainable incident risk | Implemented |
 | MITRE ATT&CK matrix (33 techniques, data-driven) with alert and timeline mapping | Implemented |
-| PCAP replay, investigation workspace, evidence-bound assistant | Phases 7–8 |
+| PCAP upload and attack replay (play, pause, step, rewind, scrubber) | Implemented |
+| Investigation workspace, evidence-bound assistant | Phase 8 |
 | Threat intel, response simulation, research mode, demo mode | Phases 9–12 |
 
 All telemetry is **synthetic** unless a real source is attached, and the UI says so.
@@ -80,7 +81,7 @@ cd apps/web && npm test && npm run typecheck && npm run lint && npm run build
 
 ## Documentation
 
-[Architecture](docs/ARCHITECTURE.md) · [Threat detection](docs/THREAT-DETECTION.md) · [ML methodology](docs/ML-METHODOLOGY.md) · [MITRE mapping](docs/MITRE.md) · [Security](docs/SECURITY.md) · [Contributing](CONTRIBUTING.md)
+[Architecture](docs/ARCHITECTURE.md) · [Threat detection](docs/THREAT-DETECTION.md) · [ML methodology](docs/ML-METHODOLOGY.md) · [MITRE mapping](docs/MITRE.md) · [PCAP replay](docs/REPLAY.md) · [Security](docs/SECURITY.md) · [Contributing](CONTRIBUTING.md)
 
 ## Limitations
 
