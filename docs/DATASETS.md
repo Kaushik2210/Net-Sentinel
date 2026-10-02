@@ -23,11 +23,28 @@ subtle intensities were built to sit below rule thresholds. The ML detector was 
 evaluation circular. The result shows the rule/ML trade-off, and in particular that the ML gate is conservative (it needs a >= 6 sigma deviation; features that are constant in training,
 such as failed connections, have their standard deviation floored, which limits sensitivity). Revisiting that floor against a held-out public dataset is future work.
 
-## Public datasets (architecture only, not bundled)
+## Evaluating on a public flow CSV (loader implemented, datasets not bundled)
+
+```bash
+cd apps/api
+python -m app.research.csvflows --schema cicids2017 --csv path/to/Monday-WorkingHours.pcap_ISCX.csv --max-rows 300000
+python -m app.research.csvflows --schema unsw-nb15 --csv path/to/UNSW-NB15_1.csv
+```
+
+`app/research/csvflows.py` maps a flow row onto the event vocabulary, groups into (source host, 10-minute window) units, and scores rule-based, ML and hybrid detection on a
+**chronological split**: the Isolation Forest is trained only on benign units from the first half of the time range, and every method is scored on the second half. The output is the same
+metric set as the synthetic benchmark (no latency).
+
+**Validation status:** the loader and evaluator are tested on small hand-built CSVs that follow the published column names (including CICIDS's leading-space headers and
+`%m/%d/%Y %H:%M` timestamps). They have **not** been run on the real datasets, which are large and were not available. Expect to adjust `SCHEMAS` if a real file differs in column names or
+timestamp format. Known interpretation choices: a flow with no payload in either direction is treated as a connection attempt; UNSW-NB15's public-looking addresses mean address-based
+rules (exfiltration, lateral movement) see everything as external, so the ML profiles all sources there.
+
+## Public datasets (not bundled)
 
 NetSentinel does **not** redistribute CICIDS-style or UNSW-NB15-style datasets. Obtain them from their publishers and follow their licences.
 
-Intended ingestion path (adapter not yet implemented):
+Manual ingestion path (the `csvflows` module above automates steps 1-3):
 
 1. Read the flow CSV in chunks (pandas), never loading it whole.
 2. Map each row onto the `NetworkEvent` shape: timestamp, source and destination address, destination port, protocol, bytes sent/received, duration, and the dataset's label stored in `attributes.label`.

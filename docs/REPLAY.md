@@ -4,6 +4,18 @@
 PCAP ─▶ parser (Scapy) ─▶ flows ─▶ events ─▶ incremental detection ─▶ correlation ─▶ replay JSON ─▶ player
 ```
 
+## Zeek logs (`app/ingest/zeek.py`)
+
+`POST /api/v1/replay/upload` also accepts Zeek `conn.log` and `dns.log`, either tab-separated (with the `#fields` header) or JSON lines. The format is detected from the
+content, not the filename. Rows go through the same flow classifier as PCAP flows, so the detectors, correlation and replay are unchanged:
+
+- `conn_state` `S0`/`SH`/`OTH` (no reply) becomes an *unanswered* `conn_attempt`, and `REJ`/`RSTOS0`/`RSTRH`/`SHR` a *rejected* one.
+- TCP flows to SSH/RDP/SMB/WinRM are classified by shape exactly as for PCAP (`inferred`); 443/8443 become `tls_session`, 80 `http_request`.
+- `dns.log` rows become `dns_query` events with the queried name.
+
+This is a **batch** adapter for logs Zeek has already written; it does not tail a running sensor (a streaming adapter is future work). IPv6 rows are skipped. It was tested on
+hand-built logs in Zeek's documented formats, not on logs from a production sensor.
+
 ## Parsing (`app/ingest/pcap.py`)
 
 Packets are aggregated into flows and mapped onto the same event vocabulary as live telemetry

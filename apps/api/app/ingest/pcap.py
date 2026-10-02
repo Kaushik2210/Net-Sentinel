@@ -84,26 +84,30 @@ def _utc(ts: float) -> datetime:
     return datetime.fromtimestamp(ts, tz=UTC)
 
 
-def _events_from_flow(f: _Flow) -> EventRecord | None:
+def flow_event(src: str, dst: str, dport: int, ts: float, duration_s: float, fwd: int, rev: int, *, unanswered: bool = False, rejected: bool = False) -> EventRecord:
+    """Map one flow onto the shared event vocabulary. Used by every flow-based adapter (PCAP, Zeek, flow CSVs)."""
     base = {
-        "id": new_id("evt"), "ts": _utc(f.first), "src_ip": f.init_ip, "dst_ip": f.resp_ip, "dst_port": f.resp_port,
-        "bytes_sent": f.fwd, "bytes_received": f.rev, "duration_ms": int((f.last - f.first) * 1000),
+        "id": new_id("evt"), "ts": _utc(ts), "src_ip": src, "dst_ip": dst, "dst_port": dport,
+        "bytes_sent": fwd, "bytes_received": rev, "duration_ms": int(max(duration_s, 0) * 1000),
     }
-    answered = f.synack or (f.rev > 0)
-    if f.syn and not answered:
-        return EventRecord(protocol="tcp", event_type="conn_attempt", attributes={"state": "unanswered" if not f.rst else "rejected"}, **base)
-    if f.syn and f.rst and f.rev == 0 and f.fwd == 0:
-        return EventRecord(protocol="tcp", event_type="conn_attempt", attributes={"state": "rejected"}, **base)
-    port = f.resp_port
-    if port in ADMIN_PORTS:
-        short = (f.last - f.first) < SHORT_FLOW_SECONDS and (f.fwd + f.rev) <= SHORT_FLOW_PAYLOAD
-        etype = "auth_failure" if short else "auth_success"
-        return EventRecord(protocol=ADMIN_PORTS[port], event_type=etype, attributes={"inferred": True, "basis": "flow shape"}, **base)
-    if port in (443, 8443):
+    if unanswered or rejected:
+        return EventRecord(protocol="tcp", event_type="conn_attempt", attributes={"state": "rejected" if rejected else "unanswered"}, **base)
+    if dport in ADMIN_PORTS:
+        short = duration_s < SHORT_FLOW_SECONDS and (fwd + rev) <= SHORT_FLOW_PAYLOAD
+        return EventRecord(protocol=ADMIN_PORTS[dport], event_type="auth_failure" if short else "auth_success",
+                           attributes={"inferred": True, "basis": "flow shape"}, **base)
+    if dport in (443, 8443):
         return EventRecord(protocol="tls", event_type="tls_session", **base)
-    if port == 80:
+    if dport == 80:
         return EventRecord(protocol="http", event_type="http_request", **base)
     return EventRecord(protocol="tcp", event_type="tcp_flow", **base)
+
+
+def _events_from_flow(f: _Flow) -> EventRecord | None:
+    answered = f.synack or (f.rev > 0)
+    unanswered = f.syn and not answered
+    rejected = f.syn and f.rst and f.rev == 0 and f.fwd == 0
+    return flow_event(f.init_ip, f.resp_ip, f.resp_port, f.first, f.last - f.first, f.fwd, f.rev, unanswered=unanswered and not f.rst, rejected=(unanswered and f.rst) or rejected)
 
 
 def parse_pcap(data: bytes) -> tuple[list[EventRecord], ParseStats]:

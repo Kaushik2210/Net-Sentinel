@@ -48,12 +48,16 @@ def _entropy(values: list[str]) -> float:
     return -sum(v / n * math.log2(v / n) for v in c.values()) if n else 0.0
 
 
-def extract_features(events: list[EventRecord], window_seconds: int = WINDOW_SECONDS) -> pd.DataFrame:
-    """Return a DataFrame indexed by internal source IP with columns ``FEATURES``."""
+def extract_features(events: list[EventRecord], window_seconds: int = WINDOW_SECONDS, internal_only: bool = True) -> pd.DataFrame:
+    """Return a DataFrame indexed by source IP with columns ``FEATURES``.
+
+    ``internal_only`` restricts profiling to RFC1918-style internal hosts (the live default); datasets that use public-looking
+    addresses pass False.
+    """
     minutes = window_seconds / 60
     by_src: dict[str, list[EventRecord]] = defaultdict(list)
     for e in events:
-        if is_internal(e.src_ip):
+        if not internal_only or is_internal(e.src_ip):
             by_src[e.src_ip].append(e)
 
     rows, index = [], []

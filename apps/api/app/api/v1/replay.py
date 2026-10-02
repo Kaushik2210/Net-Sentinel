@@ -8,6 +8,7 @@ from sqlalchemy import select
 from app.core.deps import Admin, Analyst, CurrentUser, DbSession, client_ip
 from app.ingest.pcap import MAX_BYTES, PcapError, parse_pcap, validate_upload
 from app.ingest.sample import SAMPLE_OVERRIDES, build_sample_pcap
+from app.ingest.zeek import looks_like_zeek, parse_zeek
 from app.models import ReplaySession
 from app.replay.engine import build_replay
 from app.schemas.common import ORM, UTCDatetime
@@ -38,11 +39,12 @@ def _summary(s: ReplaySession) -> ReplaySummary:
 
 
 def _process(data: bytes, overrides: dict | None) -> tuple[dict, int]:
-    events, stats = parse_pcap(data)
+    events, stats = parse_zeek(data) if looks_like_zeek(data) else parse_pcap(data)
     result = build_replay(events, overrides)
     result["ingest"] = {
         "packets": stats.packets, "ipv4_packets": stats.ipv4, "flows": stats.flows, "events": len(events), "dns_queries": stats.dns_queries,
         "skipped_non_ip": stats.skipped_non_ip, "skipped_other_l4": stats.skipped_other_l4, "truncated": stats.truncated, "notes": stats.notes,
+        "source_format": "zeek" if looks_like_zeek(data) else "pcap",
         "heuristics": "Authentication outcomes on SSH/RDP/SMB/WinRM are inferred from flow shape (payloads are encrypted).",
     }
     return result, stats.packets
@@ -70,7 +72,10 @@ async def upload(file: UploadFile, request: Request, user: Analyst, db: DbSessio
     # Read at most MAX_BYTES + 1 so an oversized body is rejected without buffering all of it.
     data = await file.read(MAX_BYTES + 1)
     try:
-        validate_upload(data)
+        if not looks_like_zeek(data):
+            validate_upload(data)
+        elif len(data) > MAX_BYTES:
+            raise PcapError("file exceeds the size limit")
     except PcapError as exc:
         raise HTTPException(422, str(exc)) from exc
     name = (file.filename or "capture.pcap").replace("\\", "/").split("/")[-1]

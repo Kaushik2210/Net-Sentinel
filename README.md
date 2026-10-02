@@ -28,7 +28,7 @@ correlated incidents are never conflated.
 - **Detection engine:** eight pluggable rule detectors plus a credential-compromise detector, an Isolation Forest anomaly detector (always labelled ML), and baseline-deviation alerts. Every alert carries confidence, MITRE techniques and evidence IDs.
 - **Correlation and reconstruction:** alerts are linked by entity and time into ordered incidents with an animated, clickable attack chain and an explainable incident risk score.
 - **MITRE ATT&CK:** data-driven matrix (33 techniques) with related alerts, confidence and timeline position.
-- **PCAP replay:** upload a capture (or run the synthetic sample) and replay it with play, pause, step, rewind and a scrubber while detections appear when they first become possible.
+- **Replay and telemetry adapters:** upload a PCAP or a Zeek `conn.log`/`dns.log` (or run the synthetic sample) and replay it with play, pause, step, rewind and a scrubber while detections appear when they first become possible.
 - **Investigation workspace:** status, assignment, notes and an audit trail, plus an evidence-bound analyst whose answers cite only stored IDs and say "Insufficient evidence." when the evidence is thin. No language model is used.
 - **Threat intelligence and response:** a local indicator store behind a provider interface, and evidence-based response recommendations with a **simulation-only** executor.
 - **Research mode:** rule vs ML vs hybrid on a labelled synthetic benchmark (precision, recall, F1, FPR, confusion matrix, latency), clearly labelled as synthetic.
@@ -111,8 +111,8 @@ Scapy, pandas, scikit-learn, pytest, Vitest.
 
 ## Limitations
 
-- Telemetry is synthetic by default; there are no live Zeek, Suricata or NetFlow adapters yet (the `TelemetrySource` and detector interfaces are the extension points).
-- Evaluation uses synthetic data written by the same author as the detectors, so it demonstrates methodology, not real-world accuracy.
+- Telemetry is synthetic by default. Zeek logs and PCAPs can be ingested in batch, but there is no live-streaming Zeek, Suricata or NetFlow adapter yet (the `TelemetrySource` and detector interfaces are the extension points).
+- The built-in evaluation uses synthetic data written by the same author as the detectors, so it demonstrates methodology, not real-world accuracy. A CICIDS/UNSW-style CSV evaluator exists (`python -m app.research.csvflows`) but has only been tested on small hand-built files, not the real datasets.
 - PCAP analysis is flow-level and IPv4-only; authentication outcomes on encrypted protocols are inferred from flow shape and labelled as inferred.
 - The ML model trains on a homogeneous simulated baseline; the analyst is deterministic by design; response actions are simulated only.
 - In-process event bus, rate limiting and login throttle (single worker); session token held in `sessionStorage`; not independently audited.
@@ -121,7 +121,7 @@ Scapy, pandas, scikit-learn, pytest, Vitest.
 
 ## Future work
 
-Real telemetry adapters (Zeek, Suricata, NetFlow, syslog), evaluation on public datasets, per-role ML baselines, httpOnly-cookie sessions with CSP nonces,
+Streaming telemetry adapters (live Zeek tailing, Suricata, NetFlow, syslog), running the evaluator on the real public datasets, per-role ML baselines, httpOnly-cookie sessions with CSP nonces,
 a Redis-backed event bus for multiple workers, cloud flow-log and endpoint telemetry adapters, and approval-gated real response integrations.
 
 ## Documentation
