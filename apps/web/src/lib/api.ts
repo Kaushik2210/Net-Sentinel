@@ -1,4 +1,4 @@
-import type { DeviceDetail, DeviceSummary, NetworkEvent, Page, Summary, Topology, User } from "./types";
+import type { Alert, AlertDetail, DeviceDetail, DeviceSummary, NetworkEvent, Page, SimulationResult, Summary, Topology, User } from "./types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -49,6 +49,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     } catch { /* non-JSON error body */ }
     throw new ApiError(res.status, detail);
   }
+  if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }
 
@@ -67,6 +68,10 @@ export const api = {
     return request<Page<DeviceSummary>>(`/api/v1/devices?${qs}`);
   },
   device: (id: string) => request<DeviceDetail>(`/api/v1/devices/${id}`),
+  alerts: (limit = 25) => request<Page<Alert>>(`/api/v1/alerts?limit=${limit}`),
+  alert: (id: string) => request<AlertDetail>(`/api/v1/alerts/${id}`),
+  simulateAttack: () => request<SimulationResult>("/api/v1/detections/simulate-attack", { method: "POST" }),
+  resetSimulation: () => request<void>("/api/v1/detections/reset-simulation", { method: "POST" }),
   events: (limit = 50) => request<NetworkEvent[]>(`/api/v1/events?limit=${limit}`),
 };
 

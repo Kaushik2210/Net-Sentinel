@@ -1,15 +1,18 @@
 """Idempotent bootstrap data: dev users, the simulated network, and its baselines."""
 
+import json
 import logging
 import zlib
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.config import get_settings
 from app.core.security import Role, hash_password
-from app.models import BehaviorProfile, Connection, Device, User
+from app.detection import registry
+from app.models import BehaviorProfile, Connection, DetectionRule, Device, MITRETechnique, User
 from app.services import topology
 from app.services.behavior import score_device
 
@@ -81,3 +84,16 @@ def seed_network(db: Session) -> int:
     db.commit()
     log.info("seeded %d simulated devices", len(specs))
     return len(specs)
+
+
+def seed_detection(db: Session) -> None:
+    """One DetectionRule row per registered detector, plus the MITRE technique catalogue."""
+    existing = {r.detector for r in db.scalars(select(DetectionRule))}
+    for name, cls in registry().items():
+        if name not in existing:
+            db.add(DetectionRule(name=name, detector=name, enabled=True, parameters={}, description=(cls.__doc__ or "").strip()[:500]))
+    known = {t.id for t in db.scalars(select(MITRETechnique))}
+    for t in json.loads((Path(__file__).resolve().parent.parent / "data" / "mitre.json").read_text(encoding="utf-8")):
+        if t["id"] not in known:
+            db.add(MITRETechnique(**t))
+    db.commit()

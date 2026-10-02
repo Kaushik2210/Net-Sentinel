@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { api, tokenStore, wsUrl } from "./api";
-import type { NetworkEvent } from "./types";
+import type { Alert, NetworkEvent } from "./types";
 
 export type LiveStatus = "connecting" | "live" | "offline";
 
@@ -12,6 +12,7 @@ export type LiveStatus = "connecting" | "live" | "offline";
  */
 export function useLiveEvents(max = 60) {
   const [events, setEvents] = useState<NetworkEvent[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
   const [status, setStatus] = useState<LiveStatus>("connecting");
   const [error, setError] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -27,6 +28,8 @@ export function useLiveEvents(max = 60) {
       .catch((e) => !closed && setError(e.message))
       .finally(() => !closed && setLoaded(true));
 
+    api.alerts(25).then((p) => !closed && setAlerts(p.items)).catch(() => undefined);
+
     const connect = () => {
       const token = tokenStore.get();
       if (!token || closed) return;
@@ -38,6 +41,8 @@ export function useLiveEvents(max = 60) {
         if (msg.type === "ready") {
           retry.current = 0;
           setStatus("live");
+        } else if (msg.type === "alert") {
+          setAlerts((prev) => [msg.data as Alert, ...prev.filter((a) => a.id !== msg.data.id)].slice(0, 50));
         } else if (msg.type === "event") {
           setEvents((prev) => [msg.data as NetworkEvent, ...prev].slice(0, max));
         }
@@ -57,5 +62,5 @@ export function useLiveEvents(max = 60) {
     };
   }, [max]);
 
-  return { events, status, error, loaded };
+  return { events, alerts, setAlerts, status, error, loaded };
 }

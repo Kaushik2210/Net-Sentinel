@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CyberCard } from "@/components/cyber/CyberCard";
+import { AlertsPanel } from "@/components/dashboard/AlertsPanel";
 import { EventStream } from "@/components/dashboard/EventStream";
 import { MetricsRow } from "@/components/dashboard/MetricsRow";
 import { RiskSummary } from "@/components/dashboard/RiskSummary";
@@ -39,12 +39,7 @@ export default function Dashboard() {
         <EventStream events={live.events} status={live.status} loaded={live.loaded} error={live.error} source={summary?.mode === "SIMULATION" ? "simulation" : undefined} />
         <div className="grid gap-3">
           <ThreatOverview topology={topology} />
-          <CyberCard title="Attack timeline" tone="muted">
-            <div className="py-3 text-center">
-              <p className="text-[12px] text-foreground">No correlated incidents.</p>
-              <p className="mt-1 text-[10px] leading-relaxed text-muted">The detection and correlation engines (phases 3 and 5) build attack chains here.</p>
-            </div>
-          </CyberCard>
+          <AlertsPanel alerts={live.alerts} onReset={() => live.setAlerts([])} simulated={summary?.mode === "SIMULATION"} />
         </div>
       </div>
     </div>

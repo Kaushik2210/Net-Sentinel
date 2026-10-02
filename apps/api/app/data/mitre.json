@@ -1,0 +1,12 @@
+[
+  {"id": "T1595", "name": "Active Scanning", "tactic": "Reconnaissance", "description": "Adversaries probe victim infrastructure via network traffic to gather information for targeting."},
+  {"id": "T1046", "name": "Network Service Discovery", "tactic": "Discovery", "description": "Adversaries enumerate services running on remote hosts and network devices to find exploitable targets."},
+  {"id": "T1110", "name": "Brute Force", "tactic": "Credential Access", "description": "Adversaries systematically guess passwords or credentials when they are unknown."},
+  {"id": "T1078", "name": "Valid Accounts", "tactic": "Initial Access", "description": "Adversaries use credentials of existing accounts to gain access, persist, or escalate."},
+  {"id": "T1021", "name": "Remote Services", "tactic": "Lateral Movement", "description": "Adversaries use valid accounts to log into services designed for remote access such as SSH, RDP and SMB."},
+  {"id": "T1071.004", "name": "Application Layer Protocol: DNS", "tactic": "Command and Control", "description": "Adversaries communicate over DNS to blend in with normal traffic or tunnel data."},
+  {"id": "T1041", "name": "Exfiltration Over C2 Channel", "tactic": "Exfiltration", "description": "Adversaries steal data by sending it over their existing command and control channel."},
+  {"id": "T1048", "name": "Exfiltration Over Alternative Protocol", "tactic": "Exfiltration", "description": "Adversaries steal data using a protocol different from the main command and control channel."},
+  {"id": "T1571", "name": "Non-Standard Port", "tactic": "Command and Control", "description": "Adversaries communicate over a protocol and port pairing not typically associated, to evade filtering."},
+  {"id": "T1090", "name": "Proxy", "tactic": "Command and Control", "description": "Adversaries use a connection proxy to direct network traffic between systems or hide the true destination."}
+]

@@ -42,3 +42,14 @@ export interface Summary {
   events_per_min: number; anomalous_devices: number; high_risk_devices: number; critical_alerts: number;
   external_connections: number; generated_at: string;
 }
+
+export type DetectionClassKey = "RULE" | "BEHAVIORAL" | "ML" | "CORRELATED";
+
+export interface Alert {
+  id: string; ts: string; source: string; destination: string; event_type: string;
+  detection_class: DetectionClassKey; severity: Severity; confidence: number; detector: string;
+  mitre_techniques: string[]; explanation: string; status: string; incident_id: string | null;
+}
+export interface EvidenceItem { id: string; kind: "facts" | "event"; event_id: string | null; summary: string; data: Record<string, unknown> }
+export interface AlertDetail extends Alert { evidence: EvidenceItem[] }
+export interface SimulationResult { events_injected: number; alerts_created: Alert[] }

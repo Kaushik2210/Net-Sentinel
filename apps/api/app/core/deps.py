@@ -43,5 +43,9 @@ def require_role(minimum: Role):
     return checker
 
 
+Analyst = Annotated[User, Depends(require_role(Role.ANALYST))]
+Admin = Annotated[User, Depends(require_role(Role.ADMIN))]
+
+
 def client_ip(request: Request) -> str:
     return request.client.host if request.client else ""

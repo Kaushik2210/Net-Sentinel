@@ -5,7 +5,7 @@ description = "NetSentinel API: explainable network digital twin and security in
 requires-python = ">=3.11"
 
 [tool.ruff]
-line-length = 130
+line-length = 160
 target-version = "py311"
 
 [tool.ruff.lint]
@@ -16,6 +16,7 @@ ignore = ["S101", "B008"]
 "tests/*" = ["S105", "S106"]
 "app/services/topology.py" = ["E501", "S311"]  # synthetic-data tables; non-cryptographic PRNG
 "app/services/simulation.py" = ["S311"]
+"app/services/scenarios.py" = ["S311"]
 "alembic/*" = ["E501", "I001", "UP"]
 
 [tool.pytest.ini_options]

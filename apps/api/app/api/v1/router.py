@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from app.api.v1 import analytics, auth, devices, events, network, ws
+from app.api.v1 import alerts, analytics, auth, detections, devices, events, network, ws
 
 api_router = APIRouter(prefix="/api/v1")
-for module in (auth, devices, events, network, analytics, ws):
+for module in (auth, devices, events, network, analytics, alerts, detections, ws):
     api_router.include_router(module.router)

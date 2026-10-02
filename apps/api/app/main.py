@@ -20,8 +20,9 @@ from app.core.middleware import SecurityHeadersMiddleware
 from app.core.ratelimit import limiter
 from app.db.session import SessionLocal
 from app.services.bus import bus
+from app.services.detection_loop import run_detection_loop
 from app.services.ingest import run_ingest
-from app.services.seed import seed_network, seed_users
+from app.services.seed import seed_detection, seed_network, seed_users
 
 log = logging.getLogger("netsentinel.app")
 settings = get_settings()
@@ -40,14 +41,17 @@ async def lifespan(_: FastAPI):
     with SessionLocal() as db:
         seed_users(db)
         seed_network(db)
-    task = asyncio.create_task(run_ingest(), name="telemetry-ingest")
+        seed_detection(db)
+    tasks = [asyncio.create_task(run_ingest(), name="telemetry-ingest"), asyncio.create_task(run_detection_loop(), name="detection-loop")]
     log.info("NetSentinel %s started (env=%s, telemetry=%s)", settings.app_version, settings.environment, settings.telemetry_mode)
     try:
         yield
     finally:
-        task.cancel()
-        with contextlib.suppress(asyncio.CancelledError):
-            await task
+        for t in tasks:
+            t.cancel()
+        for t in tasks:
+            with contextlib.suppress(asyncio.CancelledError):
+                await t
 
 
 app = FastAPI(
