@@ -1,4 +1,4 @@
-import type { Indicator, IndicatorKind, IntelCheck, IntelMatch, Recommendation, AnalystAnswer, AnalystUser, AuditEntry, Note, WorkflowStatus, Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, SimulationResult, Summary, Topology, User } from "./types";
+import type { ResearchPayload, Indicator, IndicatorKind, IntelCheck, IntelMatch, Recommendation, AnalystAnswer, AnalystUser, AuditEntry, Note, WorkflowStatus, Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, SimulationResult, Summary, Topology, User } from "./types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
@@ -101,6 +101,8 @@ export const api = {
   intelMatches: () => request<IntelMatch[]>("/api/v1/threat-intel/matches"),
   recommendations: (incidentId: string) => request<Recommendation[]>(`/api/v1/response/incidents/${incidentId}`),
   simulateResponse: (recId: string) => request<{ recommendation: Recommendation; message: string; real_changes_made: boolean }>(`/api/v1/response/${recId}/simulate`, { method: "POST" }),
+  research: () => request<ResearchPayload>("/api/v1/research"),
+  runResearch: () => request<ResearchPayload>("/api/v1/research/run", { method: "POST" }),
   events: (limit = 50) => request<NetworkEvent[]>(`/api/v1/events?limit=${limit}`),
 };
 

@@ -127,3 +127,17 @@ export interface IntelMatch { indicator_id: string; kind: string; value: string;
 export interface Recommendation {
   id: string; incident_id: string; action: string; label: string; target: string; rationale: string; state: "proposed" | "simulated"; created_at: string; mode: string;
 }
+
+export interface MethodMetrics {
+  tp: number; fp: number; tn: number; fn: number; precision: number | null; recall: number | null; f1: number | null; fpr: number | null;
+  accuracy: number; latency_median_s: number | null; latency_p90_s: number | null; latency_missed: number;
+}
+export interface ResearchResult {
+  generated_at: string; seed: number; trials: number;
+  dataset: { name: string; kind: string; benign_windows: number; attack_windows: number; unit: string; attacks: string[]; intensities: Record<string, string> };
+  model: { algorithm: string; features: string[]; training_windows: number; trained_on: string };
+  methods: Record<"rule" | "ml" | "hybrid", MethodMetrics>;
+  recall_by_attack: Record<string, Record<"strong" | "subtle", Record<"rule" | "ml" | "hybrid", number>>>;
+  latency_note: string; caveats: string[];
+}
+export interface ResearchPayload { result: ResearchResult | null; supported_datasets: { name: string; kind: string; status: string; note: string }[] }

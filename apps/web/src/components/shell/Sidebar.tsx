@@ -17,7 +17,7 @@ const ITEMS: Item[] = [
   { href: "/replay", label: "PCAP replay", icon: Radar },
   { href: "/mitre", label: "MITRE ATT&CK", icon: Crosshair },
   { href: "/threat-intel", label: "Threat intel", icon: Shield },
-  { href: "/research", label: "Research", icon: Telescope, phase: 10 },
+  { href: "/research", label: "Research", icon: Telescope },
 ];
 
 export function Sidebar() {
