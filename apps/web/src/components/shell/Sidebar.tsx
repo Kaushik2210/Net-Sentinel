@@ -1,6 +1,6 @@
 "use client";
 
-import { Activity, Crosshair, FileSearch, GitBranch, Network, Radar, Shield, Telescope, type LucideIcon } from "lucide-react";
+import { Activity, Clapperboard, Crosshair, FileSearch, GitBranch, Network, Radar, Shield, Telescope, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -11,6 +11,7 @@ interface Item { href: string; label: string; icon: LucideIcon; phase?: number }
 // but are inert and tagged with the phase that delivers them.
 const ITEMS: Item[] = [
   { href: "/dashboard", label: "Command center", icon: Activity },
+  { href: "/demo", label: "Attack demo", icon: Clapperboard },
   { href: "/network", label: "Network twin", icon: Network },
   { href: "/incidents", label: "Incidents", icon: GitBranch },
   { href: "/investigate", label: "Investigate", icon: FileSearch },

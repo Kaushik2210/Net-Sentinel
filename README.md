@@ -34,7 +34,8 @@ Phases 1–10 of 12 are complete. Honest feature matrix:
 | Investigation workspace (status, assignment, notes, audit trail) and evidence-bound analyst (deterministic, citation-validated, no LLM) | Implemented |
 | Threat-intel indicator store with provider adapter; evidence-based response recommendations with safe simulation | Implemented |
 | Research mode: rule vs ML vs hybrid evaluation (precision, recall, F1, FPR, confusion matrix, latency) on a labelled synthetic benchmark | Implemented |
-| Demo mode, hardening, deployment | Phases 11–12 |
+| Guided attack demo (one click, ~75 s) and Ctrl+K command palette | Implemented |
+| Hardening review, deployment docs | Phases 11–12 |
 
 All telemetry is **synthetic** unless a real source is attached, and the UI says so.
 

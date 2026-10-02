@@ -2,9 +2,10 @@
 
 import "@xyflow/react/dist/style.css";
 import { Background, BackgroundVariant, Controls, MarkerType, MiniMap, ReactFlow, type Edge } from "@xyflow/react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DeviceIntelligence } from "@/components/network/DeviceIntelligence";
 import { NetworkNode, type NetNode } from "@/components/network/NetworkNode";
+import { ParamSync } from "@/components/shell/ParamSync";
 import { api } from "@/lib/api";
 import { SEVERITY, severityForRisk } from "@/lib/severity";
 import type { Topology } from "@/lib/types";
@@ -20,6 +21,8 @@ export default function NetworkPage() {
   const [type, setType] = useState<(typeof TYPES)[number]>("all");
   const [q, setQ] = useState("");
   const [onlyRisky, setOnlyRisky] = useState(false);
+
+  const onDevice = useCallback((id: string) => setSelected(id), []);
 
   useEffect(() => {
     let live = true;
@@ -63,6 +66,7 @@ export default function NetworkPage() {
 
   return (
     <div className="-m-4 flex h-[calc(100vh-3.5rem)] flex-col">
+      <ParamSync name="device" onValue={onDevice} />
       <div className="flex flex-wrap items-center gap-3 border-b border-border bg-surface/80 px-4 py-2">
         <h1 className="font-display text-[12px] uppercase tracking-[0.25em]"><span className="mr-2 text-primary">▍</span>Network digital twin</h1>
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="find hostname or IP…" aria-label="Find device"

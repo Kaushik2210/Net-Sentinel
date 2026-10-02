@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { CyberCard } from "@/components/cyber/CyberCard";
 import { DetectionClassBadge, ThreatBadge } from "@/components/cyber/ThreatBadge";
+import { ParamSync } from "@/components/shell/ParamSync";
 import { api } from "@/lib/api";
 import type { MitreMatrix, TechniqueDetail } from "@/lib/types";
 import { cn, formatClock } from "@/lib/utils";
@@ -34,6 +35,7 @@ export default function MitrePage() {
     return () => { live = false; };
   }, [selected]);
 
+  const onTechnique = useCallback((id: string) => setSelected(id), []);
   const needle = q.trim().toLowerCase();
   const visible = useMemo(
     () => (t: { id: string; name: string; observed: boolean }) =>
@@ -44,6 +46,7 @@ export default function MitrePage() {
 
   return (
     <div className="grid gap-3 xl:grid-cols-[1fr_380px]">
+      <ParamSync name="technique" onValue={onTechnique} />
       <div className="min-w-0 space-y-3">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="font-display text-[12px] uppercase tracking-[0.25em]"><span className="mr-2 text-primary">▍</span>MITRE ATT&amp;CK matrix</h1>

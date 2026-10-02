@@ -3,6 +3,7 @@
 import { LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Logo } from "@/components/cyber/Logo";
+import { CommandPalette } from "@/components/shell/CommandPalette";
 import { StatusDot } from "@/components/cyber/SeverityIndicator";
 import { useAuth } from "@/lib/auth";
 import { useSummary } from "@/lib/summary";
@@ -49,6 +50,7 @@ export function TopBar() {
         <Readout label="Last update" value={<Clock />} tone="muted" />
       </div>
       <div className="ml-auto flex items-center gap-3">
+        <CommandPalette />
         {user && (
           <div className="hidden text-right leading-tight sm:block">
             <div className="text-[11px] text-foreground">{user.display_name}</div>

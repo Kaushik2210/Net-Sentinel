@@ -8,6 +8,7 @@ import { ThreatBadge } from "@/components/cyber/ThreatBadge";
 import { AnalystPanel } from "@/components/investigate/AnalystPanel";
 import { ResponsePanel } from "@/components/investigate/ResponsePanel";
 import { WorkflowPanel } from "@/components/investigate/WorkflowPanel";
+import { ParamSync } from "@/components/shell/ParamSync";
 import { api } from "@/lib/api";
 import type { IncidentDetail, IncidentSummary } from "@/lib/types";
 import { cn, timeAgo } from "@/lib/utils";
@@ -29,10 +30,12 @@ export default function InvestigatePage() {
 
   const shown = detail && detail.id === activeId ? detail : null;
   const current = shown?.steps.find((s) => s.position === step) ?? shown?.steps[0];
+  const onIncident = useCallback((id: string) => { setSelectedId(id); setStep(0); }, []);
   const changed = () => { loadList(); loadDetail(); };
 
   return (
     <div className="space-y-3">
+      <ParamSync name="incident" onValue={onIncident} />
       {error && <p role="alert" className="border border-danger/40 bg-danger/10 px-3 py-2 text-[12px] text-danger">{error}</p>}
       <div className="grid gap-3 xl:grid-cols-[260px_1fr_380px]">
         <CyberCard title="Incident queue" tone="danger" bodyClassName="p-0" className="xl:self-start">

@@ -9,39 +9,58 @@ import { SEVERITY } from "@/lib/severity";
 import type { ReplayResult } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const BASE_SECONDS = 40; // wall-clock seconds for a full replay at 1x
+const DEFAULT_BASE_SECONDS = 40; // wall-clock seconds for a full replay at 1x
 const SPEEDS = [1, 2, 4, 8];
 const W = 820, H = 520;
 
 const clock = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
 /** All playback state is derived client-side from the replay JSON; scrubbing never calls the server. */
-export function ReplayPlayer({ result }: { result: ReplayResult }) {
+interface PlayerProps {
+  result: ReplayResult;
+  /** Start playing immediately (demo mode). */
+  autoPlay?: boolean;
+  /** Wall-clock seconds for a full replay at 1x. */
+  baseSeconds?: number;
+  /** Reports the replay clock so a host page can caption it. */
+  onTime?: (t: number) => void;
+  /** Called once when playback reaches the end. */
+  onComplete?: () => void;
+  /** Hide the side panels and controls for a presentation view. */
+  presentation?: boolean;
+}
+
+export function ReplayPlayer({ result, autoPlay = false, baseSeconds = DEFAULT_BASE_SECONDS, onTime, onComplete, presentation = false }: PlayerProps) {
   const dur = Math.max(result.duration_s, 1);
   const [t, setT] = useState(0);
-  const [playing, setPlaying] = useState(false);
+  const [playing, setPlaying] = useState(autoPlay);
   const [dir, setDir] = useState<1 | -1>(1);
   const [speedIdx, setSpeedIdx] = useState(0);
   const [stepSel, setStepSel] = useState<string | null>(null);
-  const raf = useRef<number | null>(null);
-  const last = useRef(0);
 
   useEffect(() => {
     if (!playing) return;
-    const tick = (now: number) => {
-      const dt = (now - last.current) / 1000;
-      last.current = now;
+    // Interval + real elapsed time (not frame counting) keeps playback correct if the tab is throttled.
+    let last = performance.now();
+    const id = setInterval(() => {
+      const now = performance.now();
+      const dt = (now - last) / 1000;
+      last = now;
       setT((prev) => {
-        const next = prev + dir * dt * SPEEDS[speedIdx] * (dur / BASE_SECONDS);
+        const next = prev + dir * dt * SPEEDS[speedIdx] * (dur / baseSeconds);
         if (next >= dur || next <= 0) { setPlaying(false); return Math.min(dur, Math.max(0, next)); }
         return next;
       });
-      raf.current = requestAnimationFrame(tick);
-    };
-    last.current = performance.now();
-    raf.current = requestAnimationFrame(tick);
-    return () => { if (raf.current) cancelAnimationFrame(raf.current); };
-  }, [playing, dir, speedIdx, dur]);
+    }, 50);
+    return () => clearInterval(id);
+  }, [playing, dir, speedIdx, dur, baseSeconds]);
+
+  useEffect(() => { onTime?.(t); }, [t, onTime]);
+  const done = useRef(false);
+  useEffect(() => {
+    if (t >= dur && !done.current) { done.current = true; onComplete?.(); }
+    if (t < dur) done.current = false;
+  }, [t, dur, onComplete]);
 
   // Layout: internal hosts on an arc (left), external on a column (right). Deterministic.
   const pos = useMemo(() => {
@@ -91,7 +110,7 @@ export function ReplayPlayer({ result }: { result: ReplayResult }) {
   const btn = "inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-muted transition hover:border-primary hover:text-primary";
 
   return (
-    <div className="grid gap-3 xl:grid-cols-[1fr_340px]">
+    <div className={cn("grid gap-3", !presentation && "xl:grid-cols-[1fr_340px]")}>
       <div className="space-y-3">
         <CyberCard title="Replay topology" tone="primary" bodyClassName="p-0"
           actions={<span className="text-[9px] tracking-[0.2em] text-muted">T+{clock(t)} / {clock(dur)}</span>}>
@@ -117,14 +136,14 @@ export function ReplayPlayer({ result }: { result: ReplayResult }) {
               );
             })}
           </svg>
-          <div className="flex flex-wrap items-center gap-2 border-t border-border p-3">
+          {!presentation && <div className="flex flex-wrap items-center gap-2 border-t border-border p-3">
             <button className={btn} onClick={() => { setDir(-1); setPlaying(true); }} aria-label="Rewind"><Rewind className="size-3.5" /> Rewind</button>
             <button className={cn(btn, playing && dir === 1 && "border-primary text-primary")} onClick={() => { if (t >= dur) setT(0); setDir(1); setPlaying((p) => !(p && dir === 1)); }}>
               {playing && dir === 1 ? <><Pause className="size-3.5" /> Pause</> : <><Play className="size-3.5" /> Play</>}</button>
             <button className={btn} onClick={nextMark} aria-label="Step to next detection"><SkipForward className="size-3.5" /> Step</button>
             <button className={btn} onClick={() => setSpeedIdx((i) => (i + 1) % SPEEDS.length)} aria-label="Change speed"><FastForward className="size-3.5" /> {SPEEDS[speedIdx]}x</button>
             <input type="range" min={0} max={dur} step={dur / 400} value={t} onChange={(e) => jump(Number(e.target.value))} aria-label="Timeline scrubber" className="min-w-40 flex-1 accent-[#00e5ff]" />
-          </div>
+          </div>}
           <div className="relative mx-3 mb-3 h-3" aria-hidden>
             {result.alerts.map((a) => (
               <span key={a.id} title={a.event_type} className="absolute top-0 size-2 -translate-x-1/2 rotate-45" style={{ left: `${(a.detected_offset_s / dur) * 100}%`, background: a.detected_offset_s <= t ? SEVERITY[a.severity].hex : "#2a4256" }} />
@@ -133,7 +152,7 @@ export function ReplayPlayer({ result }: { result: ReplayResult }) {
         </CyberCard>
       </div>
 
-      <div className="space-y-3">
+      <div className={cn("space-y-3", presentation && "grid gap-3 space-y-0 md:grid-cols-3")}>
         <CyberCard title="Threat state" tone="danger">
           <div className="flex items-center gap-4">
             <ThreatScore score={frame?.threat ?? 0} label="THREAT" />
