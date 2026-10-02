@@ -75,3 +75,15 @@ export interface IncidentDetail extends IncidentSummary {
   supporting: { id: string; detection_class: DetectionClassKey; event_type: string; severity: Severity; confidence: number; explanation: string; source: string }[];
   techniques: Technique[]; evidence_count: number;
 }
+
+export interface TechniqueCell {
+  id: string; name: string; description: string; observed: boolean; alert_count: number;
+  max_confidence: number | null; mean_confidence: number | null; first_seen: string | null;
+}
+export interface MitreMatrix { tactics: { name: string; techniques: TechniqueCell[] }[]; observed_techniques: number; total_techniques: number }
+export interface TechniqueRelatedAlert {
+  id: string; ts: string; detector: string; detection_class: DetectionClassKey; severity: Severity; confidence: number;
+  explanation: string; source: string; destination: string; incident_id: string | null;
+  chain_position: number | null; chain_length: number | null; stage: string | null;
+}
+export interface TechniqueDetail extends TechniqueCell { tactic: string; alerts: TechniqueRelatedAlert[]; evidence_event_ids: string[] }

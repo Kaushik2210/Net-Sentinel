@@ -92,8 +92,12 @@ def seed_detection(db: Session) -> None:
     for name, cls in registry().items():
         if name not in existing:
             db.add(DetectionRule(name=name, detector=name, enabled=True, parameters={}, description=(cls.__doc__ or "").strip()[:500]))
-    known = {t.id for t in db.scalars(select(MITRETechnique))}
+    # Upsert so edits to data/mitre.json reach existing databases.
+    known = {t.id: t for t in db.scalars(select(MITRETechnique))}
     for t in json.loads((Path(__file__).resolve().parent.parent / "data" / "mitre.json").read_text(encoding="utf-8")):
-        if t["id"] not in known:
+        row = known.get(t["id"])
+        if row is None:
             db.add(MITRETechnique(**t))
+        else:
+            row.name, row.tactic, row.description = t["name"], t["tactic"], t["description"]
     db.commit()
