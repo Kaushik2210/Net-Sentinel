@@ -15,7 +15,7 @@ Telemetry source ─▶ NetworkEvent ─▶ Behavior profile ─▶ Detectors �
 ```
 
 Every arrow carries evidence IDs (`evt_…`, `alt_…`, `inc_…`) so any conclusion can be traced
-back to raw telemetry. The planned analyst assistant only receives this evidence package.
+back to raw telemetry. The analyst only receives this evidence package.
 
 ## Repository layout
 
@@ -23,19 +23,27 @@ back to raw telemetry. The planned analyst assistant only receives this evidence
 apps/api      FastAPI service (Python)
   app/core        settings, security (JWT, RBAC), middleware, rate limiting
   app/models      SQLAlchemy models, split by domain
-  app/services    behavior scoring, simulation, ingestion loop, event bus, seed
+  app/detection   detector interface, registry, built-in detectors, engine
+  app/ml          features, AnomalyModel interface, Isolation Forest, training service
+  app/correlation pure alert -> incident-chain logic
+  app/ingest      PCAP parser and synthetic capture generator
+  app/replay      incremental replay builder
+  app/analyst     evidence packages, deterministic answers, citation validator, provider interface
+  app/intel       threat-intel provider interface and local store
+  app/response    recommendations and the simulation-only actuator
+  app/research    evaluation harness
+  app/services    behavior scoring, simulation, ingestion loop, event bus, risk, incidents, seed
   app/api/v1      versioned routers (+ WebSocket)
   alembic/        migrations
 apps/web      Next.js console (TypeScript, Tailwind v4)
-  src/components/cyber    design-system primitives
-  src/components/{landing,dashboard,shell}
+  src/components/{cyber,landing,shell,dashboard,network,replay,investigate}
   src/lib         typed API client, auth, live-stream hook
 infrastructure/docker     compose file
-docs/                     this folder
+docs/                     documentation
 ```
 
-Planned module boundaries (added by phase): `detection/`, `ml/`, `correlation/`, `replay/`
-under `apps/api/app/`, each behind a small interface.
+Modules are flat packages behind small interfaces (`Detector`, `AnomalyModel`, `TelemetrySource`, `ThreatIntelProvider`, `ResponseActuator`, `AnalystProvider`),
+so adding a capability does not touch unrelated code.
 
 ## Key decisions
 
@@ -54,7 +62,13 @@ under `apps/api/app/`, each behind a small interface.
 
 1. **Provenance is explicit.** Alerts carry `detection_class`: `RULE`, `BEHAVIORAL`, `ML`, `CORRELATED`. The UI never merges them.
 2. **Simulation is labelled.** Mode is returned by `/api/v1/analytics/summary` and shown in the top bar and a dashboard banner. The simulator emits only `info` telemetry; it never fabricates detections.
-3. **Planned features are inert.** Unbuilt modules appear in the sidebar tagged with their phase and are not links.
+3. **Claims match the code.** The README states limitations and what is simulated; the landing page tags capabilities; the analyst says "Insufficient evidence." rather than guessing; response actions are simulation-only.
+
+## Measured performance
+
+On a development machine (SQLite, 20,000 stored events, single worker), median API latency is 3-12 ms: `/health` 3.5 ms, `analytics/summary` 8.7 ms,
+`events?limit=200` 11.9 ms, `network/topology` 10.8 ms, `incidents` 6.9 ms, `mitre` 8.4 ms. A training run of the anomaly model takes ~2 s at startup; the
+research evaluation takes ~25 s; a replay of a 4,500-packet capture takes a few seconds. These are single-machine figures, not a load test.
 
 ## Scaling notes
 
@@ -65,5 +79,5 @@ event tables, Redis streams for fan-out, and pre-aggregated rollups for dashboar
 ## Extension points
 
 - **New telemetry source:** implement `TelemetrySource` (`app/services/simulation.py`).
-- **New detector (phase 3):** implement the detector interface and register it; no other module changes.
+- **New detector:** implement the detector interface and register it; no other module changes.
 - **Future:** cloud flow logs, endpoint telemetry, SOAR hooks, and multi-tenancy are intended as adapters behind these same seams and are not implemented.

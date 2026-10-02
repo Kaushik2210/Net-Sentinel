@@ -50,7 +50,7 @@ export function Intelligence() {
         </Reveal>
       </Section>
 
-      <Section id="attack" index="05" eyebrow="Attack reconstruction" title="Scattered alerts become one ordered incident" status="IN PROGRESS"
+      <Section id="attack" index="05" eyebrow="Attack reconstruction" title="Scattered alerts become one ordered incident" status="LIVE"
         lead="The correlation engine links events by entity, time and behavior, then orders them into a chain you can click through, each step with its evidence and confidence.">
         <ol className="relative border-l border-border-strong pl-6">
           {CHAIN.map(([stage, tech, detail, time], i) => (
@@ -68,7 +68,7 @@ export function Intelligence() {
         <p className="mt-6 text-[10px] text-muted">Example chain for illustration.</p>
       </Section>
 
-      <Section id="mitre" index="06" eyebrow="MITRE ATT&CK" title="Detections mapped to techniques, stored as data, not hard-coded UI" status="PLANNED">
+      <Section id="mitre" index="06" eyebrow="MITRE ATT&CK" title="Detections mapped to techniques, stored as data, not hard-coded UI" status="LIVE">
         <Reveal className="grid grid-cols-2 gap-px border border-border bg-border sm:grid-cols-5">
           {TACTICS.map((t) => (
             <div key={t} className="bg-panel p-3">
@@ -81,8 +81,8 @@ export function Intelligence() {
         </Reveal>
       </Section>
 
-      <Section id="xai" index="07" eyebrow="Explainable AI analyst" title="An assistant that may only quote the evidence it is given" status="PLANNED"
-        lead="The analyst receives a structured evidence package from the detection and correlation layers. It cannot invent telemetry; with too little evidence it answers plainly.">
+      <Section id="xai" index="07" eyebrow="Explainable AI analyst" title="An assistant that may only quote the evidence it is given" status="LIVE"
+        lead="The analyst receives a structured evidence package from the detection and correlation layers. It cannot invent telemetry; with too little evidence it answers plainly. Answers are deterministic and citation-validated; no language model is used.">
         <Reveal className="grid gap-4 md:grid-cols-2">
           <TerminalPanel title="analyst > why is PC-07 suspicious?">
             <p>PC-07 deviates from its baseline on 4 metrics (see <span className="text-primary">risk factors</span>).</p>

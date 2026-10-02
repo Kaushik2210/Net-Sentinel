@@ -28,7 +28,7 @@ export function Story() {
         </div>
       </Section>
 
-      <Section id="how" index="02" eyebrow="How it works" title="From packets to a defensible incident report" status="IN PROGRESS">
+      <Section id="how" index="02" eyebrow="How it works" title="From packets to a defensible incident report" status="LIVE">
         <ol className="grid gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-6">
           {PIPELINE.map(([t, d], i) => (
             <Reveal key={t} delay={i * 0.06} className="relative bg-panel p-4">
@@ -41,7 +41,7 @@ export function Story() {
         </ol>
       </Section>
 
-      <Section id="twin" index="03" eyebrow="Network digital twin" title="A living model of the network, banded by trust zone" status="IN PROGRESS"
+      <Section id="twin" index="03" eyebrow="Network digital twin" title="A living model of the network, banded by trust zone" status="LIVE"
         lead="Devices, communication edges and risk are modelled as a graph: Internet, perimeter, DMZ, internal, data, IoT and cloud. Edge weight is traffic volume; suspicious flows stand out.">
         <Reveal>
           <svg viewBox="0 0 800 210" className="w-full border border-border bg-black/40" role="img" aria-label="Zones of the digital twin">

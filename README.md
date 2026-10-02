@@ -2,51 +2,60 @@
 
 **An explainable network digital twin for threat detection, attack reconstruction and security investigation.**
 
-NetSentinel is an MCA research project. It turns network telemetry into per-device behavioral
-baselines, transparent risk scores, and (in later phases) correlated attack chains mapped to
-MITRE ATT&CK. It is designed to consume telemetry from existing engines such as Zeek and
-Suricata rather than replace them.
+NetSentinel is an MCA research project. It turns network telemetry into per-device behavioral baselines,
+transparent risk scores, correlated attack chains mapped to MITRE ATT&CK, and an investigation workspace in which
+every conclusion cites the evidence behind it. It is designed to consume telemetry from existing engines (Zeek,
+Suricata, PCAP, NetFlow, syslog) rather than replace them, and it does not claim to compete with commercial platforms.
 
 ## Problem
 
-Alert-centric tools tell analysts *that* something fired, but rarely *why*, what evidence
-supports it, or how activity evolved. NetSentinel focuses on explainability: every score lists
-its contributing factors, every conclusion cites events, and rule detections, behavioral
-anomalies and ML anomalies are never conflated.
+Alert-centric tools say *that* something fired, but rarely *why*, what evidence supports it, or how activity evolved.
+NetSentinel's question is: **what is happening on this network, why is it suspicious, how did it evolve, what is the evidence,
+and what should an analyst check next?** Every score lists its contributing factors, and rule detections, behavioral anomalies, ML anomalies and
+correlated incidents are never conflated.
 
-## Status
+## See it in two minutes
 
-Phases 1–10 of 12 are complete. Honest feature matrix:
+1. Start the stack (below) and sign in.
+2. Open **Attack demo** (`/demo`) and press **Start attack simulation**. A synthetic seven-minute intrusion is built as a real PCAP, parsed, detected and
+   correlated while the topology reacts and the attack chain assembles. It ends on *Incident reconstructed* with the risk, technique count and linked evidence.
+3. Press **Ctrl+K** to jump to any device, incident or MITRE technique; open **Network**, click a device, and read why it is scored the way it is.
 
-| Capability | State |
-|---|---|
-| Landing page, design system, command-center dashboard | Implemented |
-| Auth (JWT), RBAC, audit log, rate limiting, secure headers | Implemented |
-| Relational schema + Alembic migrations (all planned entities) | Implemented |
-| Simulated enterprise network (47 devices) and live telemetry over WebSocket | Implemented |
-| Behavioral baselines and transparent risk scoring | Implemented |
-| React Flow network explorer, device intelligence panel | Implemented |
-| Pluggable rule-based detection engine (8 detectors), alerts with evidence, labelled attack simulation | Implemented |
-| Isolation Forest anomaly detection (labelled ML), behavioral alerts | Implemented |
-| Alert correlation, incidents, animated attack-chain reconstruction, explainable incident risk | Implemented |
-| MITRE ATT&CK matrix (33 techniques, data-driven) with alert and timeline mapping | Implemented |
-| PCAP upload and attack replay (play, pause, step, rewind, scrubber) | Implemented |
-| Investigation workspace (status, assignment, notes, audit trail) and evidence-bound analyst (deterministic, citation-validated, no LLM) | Implemented |
-| Threat-intel indicator store with provider adapter; evidence-based response recommendations with safe simulation | Implemented |
-| Research mode: rule vs ML vs hybrid evaluation (precision, recall, F1, FPR, confusion matrix, latency) on a labelled synthetic benchmark | Implemented |
-| Guided attack demo (one click, ~75 s) and Ctrl+K command palette | Implemented |
-| Hardening review, deployment docs | Phases 11–12 |
+## Features
 
-All telemetry is **synthetic** unless a real source is attached, and the UI says so.
+- **Network digital twin:** React Flow topology of 47 simulated devices, traffic-weighted edges, suspicious flows highlighted, per-device intelligence (identity, baseline vs current behavior, risk factors, ML score, connections, events).
+- **Transparent behavior scoring:** baseline vs current arithmetic with named factors, no opaque "AI score".
+- **Detection engine:** eight pluggable rule detectors plus a credential-compromise detector, an Isolation Forest anomaly detector (always labelled ML), and baseline-deviation alerts. Every alert carries confidence, MITRE techniques and evidence IDs.
+- **Correlation and reconstruction:** alerts are linked by entity and time into ordered incidents with an animated, clickable attack chain and an explainable incident risk score.
+- **MITRE ATT&CK:** data-driven matrix (33 techniques) with related alerts, confidence and timeline position.
+- **PCAP replay:** upload a capture (or run the synthetic sample) and replay it with play, pause, step, rewind and a scrubber while detections appear when they first become possible.
+- **Investigation workspace:** status, assignment, notes and an audit trail, plus an evidence-bound analyst whose answers cite only stored IDs and say "Insufficient evidence." when the evidence is thin. No language model is used.
+- **Threat intelligence and response:** a local indicator store behind a provider interface, and evidence-based response recommendations with a **simulation-only** executor.
+- **Research mode:** rule vs ML vs hybrid on a labelled synthetic benchmark (precision, recall, F1, FPR, confusion matrix, latency), clearly labelled as synthetic.
+
+All telemetry is **synthetic** unless a real source is attached, and the UI says so wherever it is shown.
+
+## Architecture
+
+```
+telemetry source ─▶ normalized events ─▶ detectors (rule / behavioral / ML) ─▶ alerts + evidence
+ (simulator, PCAP;                                                                    │
+  Zeek/Suricata/NetFlow later)        risk engine ◀─ attack chain ◀─ correlation ◀────┘
+                                          │
+                       investigation ◀────┴────▶ analyst (evidence-bound) ─▶ response (simulated)
+```
+
+FastAPI + SQLAlchemy backend (SQLite for development, PostgreSQL for deployment), Next.js console, WebSocket for live events and alerts.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Quick start (local)
 
 Requirements: Python 3.11+, Node 22+.
 
 ```bash
-cp .env.example .env     # set JWT_SECRET and SEED_*_PASSWORD (see comments in the file)
+cp .env.example .env     # set JWT_SECRET and the SEED_*_PASSWORD values (see comments in the file)
 
-# API  (http://localhost:8000, docs at /docs)
+# API  (http://127.0.0.1:8000, OpenAPI docs at /docs)
 cd apps/api
 python -m venv .venv && .venv/Scripts/pip install -r requirements.txt   # Linux/macOS: .venv/bin/pip
 .venv/Scripts/python -m uvicorn app.main:app --port 8000
@@ -57,39 +66,51 @@ npm install
 npm run dev
 ```
 
-Sign in with a seed account (`admin`, `analyst` or `viewer`) using the password you set in `.env`.
+Sign in with `admin`, `analyst` or `viewer` and the password you set in `.env`. Migrations run automatically at startup.
+On Windows, prefer `127.0.0.1` over `localhost` when calling the API directly from scripts (IPv6 fallback adds ~200 ms per connection).
+Docker and production notes: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-With Docker (PostgreSQL): `docker compose -f infrastructure/docker/docker-compose.yml --env-file .env up --build`
-(compose file provided; not yet validated in CI).
+## API
 
-## How risk scoring works
+Versioned under `/api/v1`: `auth`, `devices`, `network`, `events`, `alerts`, `detections`, `incidents`, `investigations`, `analyst`, `mitre`, `replay`, `threat-intel`, `response`, `research`, `analytics` (+ `ws/stream`).
+Interactive OpenAPI documentation is served at `/docs`. Roles: `VIEWER` (read), `ANALYST` (investigate, simulate, upload), `ADMIN` (everything, including deletes and detector toggles).
 
-For each baseline metric (DNS/h, HTTP/h, SSH/h, upload MB/day, new destinations/day):
-`points = min(cap, round(5 · log2(current / baseline_max)))` when the ratio exceeds 1.5×.
-A criticality amplifier (+3 per level above 1) applies only if something already deviates.
-Example, PC-07: SSH +20, upload +20, DNS +15, new destinations +9, criticality +3 = **67**.
-The same breakdown is shown in the UI and pinned by a test. See `apps/api/app/services/behavior.py`.
+## Methodology
 
-## Tech stack
-
-Next.js 16, TypeScript, Tailwind v4, Framer Motion, Recharts / React Flow (installed for upcoming
-views), FastAPI, SQLAlchemy 2, Alembic, PostgreSQL / SQLite, scikit-learn (phase 4), pytest, Vitest.
+- **Risk scoring:** per metric, `points = min(cap, round(5·log2(current / baseline_max)))` when the ratio exceeds 1.5×, plus a criticality amplifier only if something already deviates. PC-07 in the simulation scores **67** (SSH +20, upload +20, DNS +15, new destinations +9, criticality +3); the same breakdown is shown in the UI and pinned by a test.
+- **Detection:** [docs/THREAT-DETECTION.md](docs/THREAT-DETECTION.md). **ML:** [docs/ML-METHODOLOGY.md](docs/ML-METHODOLOGY.md). **MITRE:** [docs/MITRE.md](docs/MITRE.md).
+- **Replay, analyst, intel and response:** [docs/REPLAY.md](docs/REPLAY.md), [docs/ANALYST.md](docs/ANALYST.md), [docs/INTEL-AND-RESPONSE.md](docs/INTEL-AND-RESPONSE.md).
+- **Evaluation and datasets:** [docs/DATASETS.md](docs/DATASETS.md).
 
 ## Testing
 
 ```bash
-cd apps/api && python -m pytest && python -m ruff check .
+cd apps/api && python -m pytest && python -m ruff check .          # 111 tests
 cd apps/web && npm test && npm run typecheck && npm run lint && npm run build
 ```
 
-## Documentation
+## Tech stack
 
-[Architecture](docs/ARCHITECTURE.md) · [Threat detection](docs/THREAT-DETECTION.md) · [ML methodology](docs/ML-METHODOLOGY.md) · [MITRE mapping](docs/MITRE.md) · [PCAP replay](docs/REPLAY.md) · [Analyst](docs/ANALYST.md) · [Intel and response](docs/INTEL-AND-RESPONSE.md) · [Datasets and evaluation](docs/DATASETS.md) · [Security](docs/SECURITY.md) · [Contributing](CONTRIBUTING.md)
+Next.js 16, TypeScript, Tailwind v4, Framer Motion, React Flow, Recharts, FastAPI, Pydantic, SQLAlchemy 2, Alembic, PostgreSQL / SQLite,
+Scapy, pandas, scikit-learn, pytest, Vitest.
 
 ## Limitations
 
-Synthetic data only; no real telemetry adapters yet; single-process event bus; session token in
-`sessionStorage`; no independent security audit. See [SECURITY.md](docs/SECURITY.md).
+- Telemetry is synthetic by default; there are no live Zeek, Suricata or NetFlow adapters yet (the `TelemetrySource` and detector interfaces are the extension points).
+- Evaluation uses synthetic data written by the same author as the detectors, so it demonstrates methodology, not real-world accuracy.
+- PCAP analysis is flow-level and IPv4-only; authentication outcomes on encrypted protocols are inferred from flow shape and labelled as inferred.
+- The ML model trains on a homogeneous simulated baseline; the analyst is deterministic by design; response actions are simulated only.
+- In-process event bus, rate limiting and login throttle (single worker); session token held in `sessionStorage`; not independently audited.
+- Docker files are provided but have not been validated in CI. Details in [docs/SECURITY.md](docs/SECURITY.md).
+
+## Future work
+
+Real telemetry adapters (Zeek, Suricata, NetFlow, syslog), evaluation on public datasets, per-role ML baselines, httpOnly-cookie sessions with CSP nonces,
+a Redis-backed event bus for multiple workers, cloud flow-log and endpoint telemetry adapters, and approval-gated real response integrations.
+
+## Documentation
+
+[Architecture](docs/ARCHITECTURE.md) · [Security](docs/SECURITY.md) · [Deployment](docs/DEPLOYMENT.md) · [Threat detection](docs/THREAT-DETECTION.md) · [ML methodology](docs/ML-METHODOLOGY.md) · [MITRE](docs/MITRE.md) · [PCAP replay](docs/REPLAY.md) · [Analyst](docs/ANALYST.md) · [Intel and response](docs/INTEL-AND-RESPONSE.md) · [Datasets and evaluation](docs/DATASETS.md) · [Contributing](CONTRIBUTING.md)
 
 ## Author
 

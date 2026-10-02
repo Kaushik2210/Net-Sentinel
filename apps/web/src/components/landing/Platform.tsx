@@ -13,9 +13,9 @@ const LAYERS = [
 
 const SECURITY: [string, Status][] = [
   ["JWT authentication, bcrypt password hashing", "LIVE"], ["Role-based access: ADMIN / ANALYST / VIEWER", "LIVE"],
-  ["Login rate limiting, generic auth errors", "LIVE"], ["Security headers, strict CSP on the API", "LIVE"],
+  ["Login rate limits, per-account throttle, generic auth errors", "LIVE"], ["Security headers, strict CSP on the API", "LIVE"],
   ["Append-only audit log", "LIVE"], ["Input validation on every parameter", "LIVE"],
-  ["Safe response simulation (no real actions)", "PLANNED"], ["Secrets from environment only", "LIVE"],
+  ["Safe response simulation (no real actions)", "LIVE"], ["Secrets from environment only", "LIVE"],
 ];
 
 export function Platform() {
@@ -41,8 +41,8 @@ export function Platform() {
         </div>
       </Section>
 
-      <Section id="research" index="10" eyebrow="Research and experimentation" title="Rules vs ML vs hybrid, measured" status="PLANNED"
-        lead="A research mode will compare detection approaches on CICIDS/UNSW-NB15-style data and custom PCAPs: precision, recall, F1, false-positive rate and detection latency. Datasets are not redistributed; ingestion docs explain how to bring your own.">
+      <Section id="research" index="10" eyebrow="Research and experimentation" title="Rules vs ML vs hybrid, measured" status="LIVE"
+        lead="Research mode compares detection approaches on a labelled synthetic benchmark: precision, recall, F1, false-positive rate and detection latency. Results are clearly labelled as synthetic. Public datasets (CICIDS/UNSW-NB15-style) are not bundled; the docs describe how to bring your own.">
         <div className="grid gap-4 sm:grid-cols-3">
           {["Rule-based", "ML (Isolation Forest)", "Hybrid"].map((t) => (
             <div key={t} className="border border-border bg-panel p-4 text-center font-display text-[12px] uppercase tracking-widest text-muted">{t}</div>
