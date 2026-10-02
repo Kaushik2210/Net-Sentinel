@@ -12,7 +12,7 @@ interface Item { href: string; label: string; icon: LucideIcon; phase?: number }
 const ITEMS: Item[] = [
   { href: "/dashboard", label: "Command center", icon: Activity },
   { href: "/network", label: "Network twin", icon: Network },
-  { href: "/incidents", label: "Incidents", icon: GitBranch, phase: 5 },
+  { href: "/incidents", label: "Incidents", icon: GitBranch },
   { href: "/investigate", label: "Investigate", icon: FileSearch, phase: 8 },
   { href: "/replay", label: "PCAP replay", icon: Radar, phase: 7 },
   { href: "/mitre", label: "MITRE ATT&CK", icon: Crosshair, phase: 6 },

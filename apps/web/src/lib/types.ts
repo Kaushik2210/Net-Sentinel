@@ -59,3 +59,19 @@ export interface MlScore {
   entity: string; hostname: string | null; score: number; risk: number; is_anomaly: boolean;
   contributions: MlContribution[]; classification: string; note: string;
 }
+
+export interface IncidentSummary {
+  id: string; title: string; status: string; severity: Severity; risk_score: number;
+  first_seen: string; last_seen: string; summary: string; classification: "CORRELATED";
+}
+export interface IncidentStep {
+  position: number; stage: string; alert_id: string | null; timestamp: string; source: string; destination: string;
+  detector: string; detection_class: DetectionClassKey; severity: Severity; confidence: number; explanation: string;
+  mitre: string[]; evidence_event_ids: string[]; facts: Record<string, unknown>; link_reason: string; link_confidence: number;
+}
+export interface Technique { id: string; name: string; tactic: string; description: string }
+export interface IncidentDetail extends IncidentSummary {
+  risk_factors: Factor[]; steps: IncidentStep[];
+  supporting: { id: string; detection_class: DetectionClassKey; event_type: string; severity: Severity; confidence: number; explanation: string; source: string }[];
+  techniques: Technique[]; evidence_count: number;
+}

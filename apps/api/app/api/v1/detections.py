@@ -8,7 +8,7 @@ from app.api.v1.alerts import AlertOut
 from app.core.config import get_settings
 from app.core.deps import Admin, Analyst, CurrentUser, DbSession, client_ip
 from app.detection import registry
-from app.models import Alert, DetectionRule, Device, Evidence, NetworkEvent
+from app.models import Alert, DetectionRule, Device, Evidence, Incident, IncidentEvent, InvestigationNote, NetworkEvent
 from app.schemas.common import ORM
 from app.services import audit
 from app.services.alerts import run_detection_cycle
@@ -76,9 +76,12 @@ async def simulate_attack(request: Request, user: Analyst, db: DbSession):
 
 @router.post("/reset-simulation", status_code=204)
 def reset_simulation(request: Request, user: Admin, db: DbSession):
-    """Remove injected attack telemetry and every alert (so demos can be repeated)."""
-    db.execute(delete(Evidence))
+    """Remove injected attack telemetry, alerts and incidents (so demos can be repeated)."""
+    db.execute(delete(IncidentEvent))
+    db.execute(delete(InvestigationNote))
     db.execute(delete(Alert))
+    db.execute(delete(Incident))
+    db.execute(delete(Evidence))
     db.execute(delete(NetworkEvent).where(NetworkEvent.source == SOURCE))
     db.commit()
     audit.record(db, user.username, "simulation.reset", "", client_ip(request))

@@ -103,6 +103,10 @@ def run_detection_cycle(db: Session, window_seconds: int = 600) -> list[Alert]:
         seen.add(key)
         created.append(_persist(db, f))
     db.commit()
+    if created:
+        from app.services.incidents import run_correlation  # local import avoids a cycle
+
+        run_correlation(db)
     for a in created:
         bus.publish({"type": "alert", "data": alert_payload(a)})
         log.info("alert %s %s %s -> %s (conf %.2f)", a.id, a.severity, a.source, a.destination, a.confidence)

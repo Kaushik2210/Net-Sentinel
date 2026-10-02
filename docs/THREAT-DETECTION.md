@@ -67,3 +67,32 @@ raised in the previous 15 minutes (same detector, source and event type) and pub
 - The attack scenario was written alongside the detectors, so detecting it demonstrates the pipeline,
   not detection accuracy. Honest evaluation against public datasets comes in phase 10.
 - Detection of an attacker who uses legitimate services at normal volume is out of scope for these rules.
+
+## Correlation and attack-chain reconstruction
+
+`app/correlation/engine.py` is a pure function from alerts to incident drafts.
+
+Two chain alerts are linked when they are **temporally close** (≤ 20 min) **and share an entity**:
+the same source address, or one alert's source was a target of the other (a pivot). A later alert whose
+kill-chain stage does not precede the earlier one's (stage progression) raises the link confidence. Links are
+grouped with union-find; a group of two or more alerts becomes an incident. Every step stores *why* it was joined.
+
+Stages: Reconnaissance, Network Scanning, Credential Attack, Initial Access, Command & Control, Lateral Movement,
+Possible Exfiltration (mapped from alert types in `STAGES`). `ml_anomaly` and `behavior_deviation` alerts are attached
+as **supporting signals** when they share an entity, but are never chain steps, which keeps ML and behavioral context
+visibly separate from rule evidence. Incident IDs are stable across re-correlation; incidents that come to share alerts
+are merged into the oldest one with their notes preserved.
+
+### Incident risk
+
+`app/services/risk.py`: the score is the capped sum of named factors, all shown in the UI:
+highest alert severity (≤25), mean detector confidence (≤12), multiple related events (≤15),
+attack-chain progression (≤18), behavioral/ML signal on an involved host (12), critical asset involved (≤12),
+external communication (10).
+
+### Limitations
+
+- Linking is rule-based on source address and time; NAT, shared jump hosts or many attackers behind one address can over-merge,
+  and an attacker who rotates addresses will under-merge.
+- Stage names are labels from a fixed mapping, not a proof of attacker intent.
+- Risk saturates at 100 for complete chains; it ranks incidents, it does not measure impact.

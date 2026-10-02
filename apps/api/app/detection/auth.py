@@ -70,3 +70,43 @@ class LateralMovementDetector(Detector):
                 )
             )
         return out
+
+
+@register
+class CredentialCompromiseDetector(Detector):
+    """A successful login to a service after a run of failures from the same source."""
+
+    name = "CredentialCompromiseDetector"
+    mitre = ("T1078", "T1110")
+
+    @classmethod
+    def defaults(cls):
+        return {"min_failures": 5}
+
+    def detect(self, events: list[EventRecord]) -> list[Finding]:
+        fails: dict[tuple[str, str, int | None], list[EventRecord]] = defaultdict(list)
+        wins: dict[tuple[str, str, int | None], list[EventRecord]] = defaultdict(list)
+        for e in events:
+            key = (e.src_ip, e.dst_ip, e.dst_port)
+            if e.event_type == "auth_failure":
+                fails[key].append(e)
+            elif e.event_type == "auth_success":
+                wins[key].append(e)
+        out = []
+        for key, ok in wins.items():
+            prior = [f for f in fails.get(key, []) if f.ts < ok[0].ts]
+            if len(prior) < self.params["min_failures"]:
+                continue
+            src, dst, port = key
+            user = ok[0].attributes.get("user", "?")
+            out.append(
+                Finding(
+                    detector=self.name, detection_class="RULE", event_type="possible_credential_compromise",
+                    severity="high", confidence=confidence_from(len(prior), self.params["min_failures"], 0.92),
+                    source=src, destination=f"{dst}:{port}", timestamp=ok[0].ts,
+                    explanation=f"{src} authenticated to {dst}:{port} as '{user}' after {len(prior)} failed attempts.",
+                    evidence_ids=[*[f.id for f in prior[-10:]], ok[0].id], mitre_techniques=list(self.mitre),
+                    facts={"prior_failures": len(prior), "account": str(user)},
+                )
+            )
+        return out
