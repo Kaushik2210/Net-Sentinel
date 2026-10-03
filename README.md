@@ -16,10 +16,11 @@ correlated incidents are never conflated.
 
 ## See it in two minutes
 
-1. Start the stack (below) and sign in.
-2. Open **Attack demo** (`/demo`) and press **Start attack simulation**. A synthetic seven-minute intrusion is built as a real PCAP, parsed, detected and
+1. Start the stack (below) and sign in as `analyst`.
+2. Open **Analyze capture**, drop a PCAP (or Zeek log), and get a verdict, the threats with their evidence, the reconstructed attack chain and a downloadable report. No capture to hand? Use *Try the built-in sample*.
+3. Open **Attack demo** (`/demo`) and press **Start attack simulation**. A synthetic seven-minute intrusion is built as a real PCAP, parsed, detected and
    correlated while the topology reacts and the attack chain assembles. It ends on *Incident reconstructed* with the risk, technique count and linked evidence.
-3. Press **Ctrl+K** to jump to any device, incident or MITRE technique; open **Network**, click a device, and read why it is scored the way it is.
+4. Press **Ctrl+K** to jump to any device, incident or MITRE technique; open **Network**, click a device, and read why it is scored the way it is.
 
 ## Features
 
@@ -60,8 +61,8 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | MITRE ATT&CK matrix and technique detail | Guided demo mid-attack (lateral movement) |
 | ![Demo finale](docs/screenshots/07-demo-finale.jpg) | ![Investigation](docs/screenshots/08-investigate-analyst.jpg) |
 | Demo finale: incident reconstructed | Investigation workspace with the evidence-bound analyst |
-| ![Research](docs/screenshots/09-research.jpg) | |
-| Research mode: rule vs ML vs hybrid (synthetic benchmark) | |
+| ![Research](docs/screenshots/09-research.jpg) | ![Analyze a capture](docs/screenshots/10-analyze-capture.jpg) |
+| Research mode: rule vs ML vs hybrid (synthetic benchmark) | Analyze a capture: drop a file, get the threats and evidence |
 
 ## Quick start (local)
 

@@ -18,6 +18,7 @@ const NAV: Cmd[] = [
   { id: "n-mit", group: "Navigate", label: "Search MITRE", href: "/mitre", keywords: "att&ck technique matrix" },
   { id: "n-ti", group: "Navigate", label: "Open threat intel", href: "/threat-intel", keywords: "indicators ioc" },
   { id: "n-res", group: "Navigate", label: "Open research mode", href: "/research", keywords: "evaluation metrics" },
+  { id: "n-ana", group: "Navigate", label: "Analyze a capture", hint: "upload pcap", href: "/analyze", keywords: "upload pcap zeek threats scan file" },
   { id: "n-demo", group: "Navigate", label: "Start attack demonstration", href: "/demo", keywords: "demo simulation" },
   { id: "n-crit", group: "Navigate", label: "Show critical alerts", hint: "detections panel", href: "/dashboard", keywords: "alerts severity detections" },
 ];
