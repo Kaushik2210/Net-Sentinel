@@ -47,6 +47,47 @@ because a viewer cannot create them. Setting `SEED_ANALYST_PASSWORD` enables the
 **Behind a proxy.** The API runs with `--proxy-headers` so rate limits and the audit log use the visitor's address rather than the proxy's. This is only safe because the API is not
 published; do not expose port 8000 directly.
 
+## Free ways to go public
+
+The production image no longer depends on a hostname: the browser calls the API on the same origin, and the WebSocket accepts the host the page was served from.
+
+### A. Temporary public link from your own PC (free, no account, minutes)
+
+Good for showing someone the project; it works only while your PC and Docker Desktop are on, and the URL changes each run.
+
+1. In `.env.prod` set `DOMAIN=:80` (Caddy serves plain HTTP; the tunnel provides HTTPS).
+2. `./scripts/deploy.sh`
+3. Install the tunnel client and open a free quick tunnel (no Cloudflare account needed):
+   ```powershell
+   winget install --id Cloudflare.cloudflared
+   cloudflared tunnel --url http://localhost:80
+   ```
+   It prints an `https://<random>.trycloudflare.com` address. Share it with the viewer password from `.env.prod`.
+
+Quick tunnels are intended for testing and carry no uptime guarantee. This route has **not** been run end to end.
+
+### B. Permanent and free: Oracle Cloud "Always Free" VM + DuckDNS (about 30-45 minutes)
+
+Needs a credit or debit card for identity verification (the Always Free resources are not charged); free-tier capacity in some regions is occasionally unavailable, in which case retry or pick another region.
+
+1. Create an Oracle Cloud account and an **Always Free** Ubuntu VM (the Ampere A1 shape is fine; all images used here support arm64). Download the SSH key it offers.
+2. In the VM's subnet security list, add ingress rules for TCP **80** and **443** from `0.0.0.0/0`. On the VM also allow them in the host firewall:
+   ```bash
+   sudo iptables -I INPUT 6 -p tcp --dport 80 -j ACCEPT && sudo iptables -I INPUT 6 -p tcp --dport 443 -j ACCEPT
+   sudo apt-get install -y iptables-persistent && sudo netfilter-persistent save
+   ```
+3. Get a free hostname at duckdns.org (sign in with GitHub), create a subdomain and point it at the VM's public IP.
+4. Install Docker and deploy:
+   ```bash
+   curl -fsSL https://get.docker.com | sudo sh && sudo usermod -aG docker $USER   # then log out and back in
+   git clone https://github.com/Kaushik2210/Net-Sentinel.git && cd Net-Sentinel
+   cp infrastructure/docker/prod.env.example .env.prod   # DOMAIN=<yourname>.duckdns.org plus three generated secrets
+   ./scripts/deploy.sh
+   ```
+   Caddy obtains a Let's Encrypt certificate automatically on first request (ports 80 and 443 must be reachable).
+
+Not run on a real Oracle VM; the Compose stack itself was validated locally.
+
 ## Production checklist
 
 - `ENVIRONMENT=production` (the API then refuses to start without `JWT_SECRET`); generate it with `python -c "import secrets; print(secrets.token_urlsafe(48))"`.

@@ -1,5 +1,7 @@
 import type { ResearchPayload, Indicator, IndicatorKind, IntelCheck, IntelMatch, Recommendation, AnalystAnswer, AnalystUser, AuditEntry, Note, WorkflowStatus, Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, SimulationResult, Summary, Topology, User } from "./types";
 
+// Unset -> local development default. Empty string -> same origin (production behind a reverse proxy), so the build
+// does not depend on the public hostname.
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 const TOKEN_KEY = "ns.token";
@@ -106,4 +108,7 @@ export const api = {
   events: (limit = 50) => request<NetworkEvent[]>(`/api/v1/events?limit=${limit}`),
 };
 
-export const wsUrl = () => API_URL.replace(/^http/, "ws") + "/api/v1/ws/stream";
+export const wsUrl = () =>
+  API_URL
+    ? API_URL.replace(/^http/, "ws") + "/api/v1/ws/stream"
+    : `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/api/v1/ws/stream`;

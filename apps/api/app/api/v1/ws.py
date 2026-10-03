@@ -9,6 +9,7 @@
 import asyncio
 import json
 import time
+from urllib.parse import urlsplit
 
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
@@ -23,7 +24,8 @@ AUTH_TIMEOUT_S = 5
 @router.websocket("/ws/stream")
 async def stream(ws: WebSocket) -> None:
     origin = ws.headers.get("origin")
-    if origin and origin not in get_settings().cors_origin_list:
+    if origin and origin not in get_settings().cors_origin_list and urlsplit(origin).netloc != ws.headers.get("host"):
+        # Allowed: a configured origin, or the same host the page was served from (hostname-agnostic deployments).
         await ws.close(code=4403)
         return
     await ws.accept()

@@ -1,4 +1,5 @@
-# {$DOMAIN} may be a real hostname (automatic HTTPS via Let's Encrypt) or "localhost" (Caddy's local CA, for testing).
+# {$DOMAIN} may be a real hostname (automatic HTTPS via Let's Encrypt), "localhost" (Caddy's local CA, for testing), or ":80"
+# (plain HTTP, for when TLS is terminated in front of Caddy, e.g. by a Cloudflare tunnel).
 {$DOMAIN} {
 	encode zstd gzip
 

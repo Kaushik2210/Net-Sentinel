@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const isProd = process.env.NODE_ENV === "production";
+// Empty NEXT_PUBLIC_API_URL means same-origin API (production behind a proxy).
 const api = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const apiWs = api.replace(/^http/, "ws");
 
@@ -12,7 +13,7 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self' data:",
-  `connect-src 'self' ${api} ${apiWs}`,
+  `connect-src 'self'${api ? ` ${api} ${apiWs}` : ""}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

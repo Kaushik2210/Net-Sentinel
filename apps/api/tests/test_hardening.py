@@ -91,3 +91,13 @@ def test_ws_closes_when_token_expires(client):
         with pytest.raises(WebSocketDisconnect) as exc:
             ws.receive_json()
         assert exc.value.code == 4401
+
+
+def test_ws_accepts_the_host_the_page_was_served_from(client):
+    """Hostname-agnostic deployments: an Origin matching the request Host is allowed even if not in CORS_ORIGINS."""
+    with client.websocket_connect("/api/v1/ws/stream", headers={"origin": "http://testserver"}) as ws:
+        ws.send_json({"type": "auth", "token": token_for(client)})
+        assert ws.receive_json()["type"] == "ready"
+    with pytest.raises(WebSocketDisconnect):
+        with client.websocket_connect("/api/v1/ws/stream", headers={"origin": "http://testserver.evil.example"}):
+            pass
