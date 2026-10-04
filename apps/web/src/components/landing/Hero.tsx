@@ -5,6 +5,8 @@ import { ArrowRight } from "lucide-react";
 import { GithubMark } from "@/components/cyber/GithubMark";
 import Link from "next/link";
 import { Logo } from "@/components/cyber/Logo";
+import { GlitchText } from "@/components/fx/GlitchText";
+import { PacketRain } from "@/components/fx/PacketRain";
 import { HeroTopology } from "./HeroTopology";
 
 const NAV = [
@@ -34,6 +36,7 @@ export function Hero() {
   return (
     <div className="relative overflow-hidden">
       <div className="bg-grid bg-vignette absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_85%)]" aria-hidden />
+      <PacketRain className="[mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]" intensity={0.45} />
       <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.05fr_1fr] lg:pt-24">
         <div>
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="mb-6 flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-muted">
@@ -41,7 +44,7 @@ export function Hero() {
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
             className="animate-flicker font-display text-5xl font-black tracking-[0.12em] text-foreground glow-primary sm:text-6xl">
-            NET<span className="text-primary">SENTINEL</span>
+            NET<GlitchText className="text-primary">SENTINEL</GlitchText>
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }}
             className="mt-6 font-display text-xl font-medium leading-snug tracking-wide text-foreground sm:text-2xl">

@@ -24,6 +24,12 @@ Visitors need no account for these, and none of them accept uploads or store any
 - **Guest session**: with `GUEST_ACCESS=true` the login page offers one click into the read-only live dashboard (a VIEWER token, no shared password).
 - Uploading your own capture stays limited to signed-in analysts, so a public instance never parses files from strangers.
 
+## Interactive touches
+
+- **Click any host** in the landing-page network to compromise it and watch the intrusion spread hop by hop (a labelled simulation).
+- Packet-rain background that reacts to the cursor, a cursor light, card spotlights, a one-time terminal boot, hover glitch on the logo, and animated verdicts and attack chains.
+- Hidden **red alert** theme: the Konami code or `Ctrl+Shift+R`. Motion respects `prefers-reduced-motion`.
+
 ## See it in two minutes
 
 1. Start the stack (below) and sign in as `analyst`.

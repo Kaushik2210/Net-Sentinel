@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Orbitron } from "next/font/google";
+import { Atmosphere } from "@/components/fx/Atmosphere";
 import { ScanlineOverlay } from "@/components/cyber/ScanlineOverlay";
 import { AuthProvider } from "@/lib/auth";
 import "./globals.css";
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AuthProvider>{children}</AuthProvider>
         <ScanlineOverlay />
+        <Atmosphere />
       </body>
     </html>
   );

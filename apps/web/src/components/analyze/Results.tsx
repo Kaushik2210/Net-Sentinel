@@ -1,6 +1,7 @@
 "use client";
 
 import { Download, ShieldAlert, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
 import { useState, type ReactNode } from "react";
 import { CyberCard } from "@/components/cyber/CyberCard";
 import { DetectionClassBadge, ThreatBadge } from "@/components/cyber/ThreatBadge";
@@ -12,10 +13,10 @@ import { download, sortThreats, toMarkdown, verdict } from "./report";
 
 export const clock = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
-function Threat({ a }: { a: ReplayAlert }) {
+function Threat({ a, index }: { a: ReplayAlert; index: number }) {
   const [open, setOpen] = useState(false);
   return (
-    <li className="border-b border-border/60">
+    <motion.li initial={{ opacity: 0, x: -24 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 + index * 0.12, duration: 0.35 }} className="border-b border-border/60">
       <button onClick={() => setOpen(!open)} aria-expanded={open} className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 px-3 py-2.5 text-left hover:bg-panel-2">
         <ThreatBadge severity={a.severity} />
         <span className="min-w-0"><span className="block truncate text-[12px]">{a.event_type.replaceAll("_", " ")}</span>
@@ -31,7 +32,7 @@ function Threat({ a }: { a: ReplayAlert }) {
           <p className="break-all text-[10px] text-muted">Evidence ({a.evidence_event_ids.length}): {a.evidence_event_ids.slice(0, 6).join(", ")}{a.evidence_event_ids.length > 6 ? " …" : ""}</p>
         </div>
       )}
-    </li>
+    </motion.li>
   );
 }
 
@@ -51,11 +52,11 @@ export function Results({ name, result, actions, footer, emptyText = "The captur
   const bad = v.count > 0;
   return (
     <>
-      <CyberCard tone={bad ? "danger" : "success"}>
+      <CyberCard tone={bad ? "danger" : "success"} className={bad ? "alarm" : undefined}>
         <div className="flex flex-wrap items-center gap-5 py-1">
           {bad ? <ShieldAlert className="size-10 text-danger" /> : <ShieldCheck className="size-10 text-success" />}
           <div className="min-w-0 flex-1">
-            <div className={cn("font-display text-xl font-black uppercase tracking-[0.15em]", bad ? "text-danger glow-danger" : "text-success glow-success")}>
+            <div className={cn("slam font-display text-xl font-black uppercase tracking-[0.15em]", bad ? "text-danger glow-danger" : "text-success glow-success")}>
               {bad ? `${v.count} threat${v.count > 1 ? "s" : ""} detected` : "No threats detected"}
             </div>
             <p className="mt-1 text-[11px] text-muted">
@@ -75,7 +76,7 @@ export function Results({ name, result, actions, footer, emptyText = "The captur
       {bad && (
         <div className="grid gap-3 xl:grid-cols-[1.4fr_1fr]">
           <CyberCard title={`Threats · ${v.count}`} tone="danger" bodyClassName="p-0">
-            <ul>{sortThreats(result.alerts).map((a) => <Threat key={a.id} a={a} />)}</ul>
+            <ul>{sortThreats(result.alerts).map((a, i) => <Threat key={a.id} a={a} index={i} />)}</ul>
           </CyberCard>
           <div className="space-y-3">
             {result.incident && (
@@ -84,8 +85,9 @@ export function Results({ name, result, actions, footer, emptyText = "The captur
                   <div className="mb-3 flex items-center gap-3"><ThreatScore score={result.incident.risk_score} size={64} /><p className="text-[11px] text-muted">{result.incident.steps.length} related stages linked by source and time into one incident.</p></div>
                   <ol className="space-y-1.5">{result.incident.steps.map((s) => {
                     const a = result.alerts.find((x) => x.id === s.alert_id);
-                    return <li key={s.alert_id} className="grid grid-cols-[1.4rem_1fr_auto] items-center gap-2 text-[11px]"><span className="text-muted tabular-nums">{s.position + 1}</span><span>{s.stage}</span>
-                      <span className="text-[10px] tabular-nums" style={{ color: a ? SEVERITY[a.severity].hex : undefined }}>T+{clock(s.offset_s)}</span></li>;
+                    return <motion.li key={s.alert_id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 + s.position * 0.35 }}
+                      className="grid grid-cols-[1.4rem_1fr_auto] items-center gap-2 border-l-2 pl-2 text-[11px]" style={{ borderColor: a ? SEVERITY[a.severity].hex : undefined }}><span className="text-muted tabular-nums">{s.position + 1}</span><span>{s.stage}</span>
+                      <span className="text-[10px] tabular-nums" style={{ color: a ? SEVERITY[a.severity].hex : undefined }}>T+{clock(s.offset_s)}</span></motion.li>;
                   })}</ol>
                 </CyberCard>
                 <CyberCard title="Why this risk score" tone="warning"><RiskFactors factors={result.incident.risk_factors} total={result.incident.risk_score} /></CyberCard>

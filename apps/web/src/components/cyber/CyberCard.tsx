@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 
 type Tone = "primary" | "success" | "warning" | "danger" | "info" | "muted";
@@ -20,9 +22,18 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 /** Metal/glass panel with bracketed corners and an optional titled header strip. */
-export function CyberCard({ tone = "muted", title, actions, className, bodyClassName, children, ...rest }: Props) {
+export function CyberCard({ tone = "muted", title, actions, className, bodyClassName, children, onMouseMove, ...rest }: Props) {
   return (
-    <section className={cn("panel-edge relative border", TONE[tone], className)} {...rest}>
+    <section
+      className={cn("panel-edge spot relative border", TONE[tone], className)}
+      onMouseMove={(e) => {
+        const r = e.currentTarget.getBoundingClientRect();
+        e.currentTarget.style.setProperty("--mx", `${e.clientX - r.left}px`);
+        e.currentTarget.style.setProperty("--my", `${e.clientY - r.top}px`);
+        onMouseMove?.(e as React.MouseEvent<HTMLDivElement>);
+      }}
+      {...rest}
+    >
       {(["tl", "tr", "bl", "br"] as const).map((c) => (
         <span
           key={c}

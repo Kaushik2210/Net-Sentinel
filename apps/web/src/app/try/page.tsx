@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Results } from "@/components/analyze/Results";
 import { CyberCard } from "@/components/cyber/CyberCard";
 import { Logo } from "@/components/cyber/Logo";
+import { PacketRain } from "@/components/fx/PacketRain";
 import { api } from "@/lib/api";
 import type { PlaygroundOptions, ReplayResult } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,7 @@ export default function TryPage() {
   const [ran, setRan] = useState<{ scenario: string; custom: boolean } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [runId, setRunId] = useState(0);
   const started = useRef(false);
 
   const run = useCallback(async (sc: string, th: Thresholds) => {
@@ -28,6 +30,7 @@ export default function TryPage() {
     try {
       const res = await api.playground(sc, th);
       setResult(res.result);
+      setRunId((n) => n + 1);
       setRan({ scenario: sc, custom: Object.keys(th).length > 0 });
     } catch (e) {
       setError((e as Error).message || "The run failed.");
@@ -55,8 +58,9 @@ export default function TryPage() {
   const nameOf = (id: string) => opts?.scenarios.find((s) => s.id === id)?.label ?? id;
 
   return (
-    <main className="bg-grid bg-vignette min-h-screen">
-      <header className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+    <main className="bg-grid bg-vignette relative min-h-screen">
+      <PacketRain className="fixed [mask-image:linear-gradient(to_bottom,black,transparent_70%)]" intensity={0.3} />
+      <header className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         <Logo />
         <nav className="flex items-center gap-3 text-[11px] uppercase tracking-[0.2em]">
           <Link href="/" className="text-muted hover:text-primary">Home</Link>
@@ -64,7 +68,7 @@ export default function TryPage() {
         </nav>
       </header>
 
-      <div className="mx-auto max-w-6xl space-y-3 px-4 pb-16">
+      <div className="relative mx-auto max-w-6xl space-y-3 px-4 pb-16">
         <div>
           <h1 className="font-display text-[12px] uppercase tracking-[0.25em]"><span className="mr-2 text-primary">▍</span>Detection playground</h1>
           <p className="mt-1 max-w-3xl text-[11px] leading-relaxed text-muted">
@@ -120,7 +124,7 @@ export default function TryPage() {
         {result && ran && (
           <div className="space-y-3 pt-1">
             <p className="text-[10px] uppercase tracking-[0.2em] text-muted">Result · {nameOf(ran.scenario)} · {ran.custom ? "custom thresholds" : "default thresholds"}</p>
-            <Results name={nameOf(ran.scenario)} result={result}
+            <Results key={runId} name={nameOf(ran.scenario)} result={result}
               footer={<>Simulation only: this traffic is generated, not captured from a real network. {result.ingest?.heuristics} Thresholds in effect: {JSON.stringify(result.settings.overrides)}.</>} />
           </div>
         )}

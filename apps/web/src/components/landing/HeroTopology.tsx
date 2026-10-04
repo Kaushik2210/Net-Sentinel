@@ -51,22 +51,51 @@ function nodeTone(id: string, phase: Phase): "ok" | "warn" | "bad" {
 
 const COLOR = { ok: "#00e5ff", warn: "#ffb000", bad: "#ff3b30" };
 
+/** Hop distance from `start` along the edges (breadth first), used to time how the compromise spreads. */
+function hops(start: string): Record<string, number> {
+  const dist: Record<string, number> = { [start]: 0 };
+  const queue = [start];
+  while (queue.length) {
+    const cur = queue.shift()!;
+    for (const [a, b] of EDGES) {
+      const next = a === cur ? b : b === cur ? a : null;
+      if (next && dist[next] === undefined) { dist[next] = dist[cur] + 1; queue.push(next); }
+    }
+  }
+  return dist;
+}
+
 export function HeroTopology({ className }: { className?: string }) {
   const [i, setI] = useState(0);
+  // Hands-on mode: click a host to compromise it and watch the intrusion spread one hop at a time.
+  const [pwn, setPwn] = useState<{ id: string; dist: Record<string, number> } | null>(null);
+  const [wave, setWave] = useState(0);
   useEffect(() => {
+    if (pwn) return;
     const t = setTimeout(() => setI((v) => (v + 1) % PHASES.length), PHASES[i].ms);
     return () => clearTimeout(t);
-  }, [i]);
-  const phase = PHASES[i];
-  const attacking = phase.id === "THREAT" || phase.id === "INVESTIGATION";
-  const threats = phase.id === "NORMAL" ? 0 : phase.id === "ANOMALY" ? 1 : 4;
-  const anomalies = phase.id === "NORMAL" ? 0 : phase.id === "ANOMALY" ? 2 : 5;
+  }, [i, pwn]);
+  useEffect(() => {
+    if (!pwn) return;
+    const max = Math.max(...Object.values(pwn.dist));
+    const t = setInterval(() => setWave((w) => (w >= max ? w : w + 1)), 650);
+    return () => clearInterval(t);
+  }, [pwn]);
+  const attack = (id: string) => { setWave(0); setPwn({ id, dist: hops(id) }); };
+  const hit = (id: string) => (pwn ? pwn.dist[id] !== undefined && pwn.dist[id] <= wave : false);
+  const phase = pwn ? { id: "THREAT" as Phase, ms: 0, note: `${pwn.id} compromised. ${Object.values(pwn.dist).filter((d) => d <= wave).length - 1} hosts reached so far, one hop every 0.65s. Isolating ${pwn.id} early is what limits the blast radius.` } : PHASES[i];
+  const attacking = !pwn && (phase.id === "THREAT" || phase.id === "INVESTIGATION");
+  const reached = pwn ? Object.values(pwn.dist).filter((d) => d <= wave).length : 0;
+  const threats = pwn ? reached : phase.id === "NORMAL" ? 0 : phase.id === "ANOMALY" ? 1 : 4;
+  const anomalies = pwn ? Math.max(0, reached - 1) : phase.id === "NORMAL" ? 0 : phase.id === "ANOMALY" ? 2 : 5;
 
   return (
     <div className={cn("panel-edge relative border border-primary/25", className)}>
       <div className="flex items-center justify-between border-b border-border px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-muted">
         <span className="flex items-center gap-2"><StatusDot tone={attacking ? "danger" : "success"} /> NETWORK DIGITAL TWIN</span>
-        <span className="hidden sm:inline">ILLUSTRATIVE &middot; SCRIPTED SIMULATION</span>
+        {pwn
+          ? <button onClick={() => setPwn(null)} className="border border-primary/60 px-2 py-0.5 text-primary hover:bg-primary hover:text-background">RESET</button>
+          : <span className="hidden sm:inline">CLICK ANY HOST TO ATTACK IT &middot; SIMULATION</span>}
       </div>
 
       <svg viewBox="0 0 600 390" className="w-full" role="img" aria-label="Animated network topology moving through normal, anomaly, threat and investigation stages">
@@ -75,8 +104,9 @@ export function HeroTopology({ className }: { className?: string }) {
         </defs>
         {EDGES.map(([a, b]) => {
           const A = byId[a], B = byId[b];
-          const hot = attacking && has(ATTACK, a, b);
-          const warm = phase.id === "ANOMALY" && (a === "PC-07" || b === "PC-07");
+          const spread = hit(a) && hit(b);
+          const hot = spread || (attacking && has(ATTACK, a, b));
+          const warm = !pwn && phase.id === "ANOMALY" && (a === "PC-07" || b === "PC-07");
           const col = hot ? COLOR.bad : warm ? COLOR.warn : "#1f3a4d";
           return (
             <line key={a + b} x1={A.x} y1={A.y} x2={B.x} y2={B.y} stroke={col} strokeWidth={hot ? 1.8 : 1}
@@ -94,11 +124,13 @@ export function HeroTopology({ className }: { className?: string }) {
           );
         })}
         {NODES.map((n) => {
-          const tone = nodeTone(n.id, phase.id);
+          const tone = pwn ? (hit(n.id) ? "bad" : "ok") : nodeTone(n.id, phase.id);
           const col = COLOR[tone];
           const big = n.kind === "net" || n.id === "INTERNET";
           return (
-            <g key={n.id} transform={`translate(${n.x},${n.y})`}>
+            <g key={n.id} transform={`translate(${n.x},${n.y})`} onClick={() => attack(n.id)} className="cursor-pointer"
+              role="button" tabIndex={0} aria-label={`Compromise ${n.id}`} onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && attack(n.id)}>
+              <circle r="16" fill="transparent" />
               {tone !== "ok" && (
                 <circle r="10" fill="none" stroke={col} strokeWidth="1" className="animate-pulse-ring" style={{ transformBox: "fill-box", transformOrigin: "center" }} />
               )}
@@ -125,7 +157,7 @@ export function HeroTopology({ className }: { className?: string }) {
 
       <div className="grid grid-cols-[1fr_auto] items-center gap-3 border-t border-border px-3 py-2">
         <div className="flex items-center gap-1" role="list" aria-label="Stage">
-          {PHASES.map((p, k) => (
+          {(pwn ? [] : PHASES).map((p, k) => (
             <span key={p.id} role="listitem" className={cn(
               "border px-1.5 py-0.5 text-[9px] tracking-[0.18em] transition-colors",
               k === i
