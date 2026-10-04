@@ -33,6 +33,15 @@ independently audited**; do not expose it to untrusted networks without further 
 - Secrets come from the environment; production refuses to start without `JWT_SECRET`; `.env` is gitignored; no credential is hard-coded.
 - Response actions are recommendations; the only executor is a simulator that changes nothing and records `real: false`.
 
+## Public (unauthenticated) surface
+
+`/api/v1/public/playground` and, when `GUEST_ACCESS=true`, `/api/v1/auth/guest` are reachable without credentials. They are designed to be safe to expose:
+
+- The playground accepts no files. Scenarios are built server-side from fixed recipes, results are computed in memory and never stored.
+- Only an allow-list of detector parameters can be set, and each value is clamped to a fixed range, so a visitor cannot make a run expensive or inject arbitrary detector arguments. Unknown detectors, parameters or scenarios are rejected with 422.
+- Both routes are rate limited per client address (12 runs and 20 guest sessions per minute).
+- A guest session is always a VIEWER token for the existing `viewer` account (it cannot upload, simulate or write) and every issue is audit-logged. The route returns 404 unless enabled.
+
 ## Known limitations
 
 - The web console keeps the bearer token in `sessionStorage`, which script can read if an XSS bug exists. A hardened deployment should use an httpOnly, SameSite cookie issued by the API.

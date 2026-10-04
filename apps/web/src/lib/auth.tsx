@@ -8,6 +8,7 @@ interface AuthState {
   user: User | null;
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
+  guest: () => Promise<void>;
   logout: () => void;
 }
 
@@ -36,7 +37,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(res.user);
   }, []);
 
-  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading, login, logout]);
+  const guest = useCallback(async () => {
+    const res = await api.guest();
+    tokenStore.set(res.access_token);
+    setUser(res.user);
+  }, []);
+
+  const value = useMemo(() => ({ user, loading, login, guest, logout }), [user, loading, login, guest, logout]);
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 

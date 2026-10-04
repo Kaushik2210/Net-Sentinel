@@ -36,6 +36,20 @@ def login(request: Request, body: LoginRequest, db: DbSession) -> TokenOut:
     return TokenOut(access_token=token, expires_in=ttl, user=UserOut.model_validate(user))
 
 
+@router.post("/guest", response_model=TokenOut)
+@limiter.limit("20/minute")
+def guest(request: Request, db: DbSession) -> TokenOut:
+    """Read-only session for public visitors. Disabled unless GUEST_ACCESS=true; always a VIEWER."""
+    if not get_settings().guest_access:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Guest access is not enabled")
+    user = db.scalar(select(User).where(User.username == "viewer", User.is_active.is_(True)))
+    if user is None:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Guest account is not available")
+    token, ttl = create_access_token(user.id, user.role)
+    audit.record(db, "guest", "auth.guest", ip=client_ip(request))
+    return TokenOut(access_token=token, expires_in=ttl, user=UserOut.model_validate(user))
+
+
 @router.get("/me", response_model=UserOut)
 def me(user: CurrentUser) -> User:
     return user

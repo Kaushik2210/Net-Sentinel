@@ -141,3 +141,10 @@ export interface ResearchResult {
   latency_note: string; caveats: string[];
 }
 export interface ResearchPayload { result: ResearchResult | null; supported_datasets: { name: string; kind: string; status: string; note: string }[] }
+
+export interface PlaygroundOptions {
+  guest_access: boolean;
+  scenarios: { id: string; label: string; blurb: string }[];
+  tunables: { detector: string; params: { key: string; default: number; min: number; max: number; label: string }[] }[];
+  detectors: { name: string; class: string; mitre: string[]; about: string }[];
+}

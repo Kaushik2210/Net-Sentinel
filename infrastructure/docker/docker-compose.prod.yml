@@ -34,6 +34,7 @@ services:
       TELEMETRY_MODE: simulation
       # Public, read-only: only a viewer account is created. Leave the others unset on purpose.
       SEED_VIEWER_PASSWORD: ${SEED_VIEWER_PASSWORD:?set SEED_VIEWER_PASSWORD}
+      GUEST_ACCESS: ${GUEST_ACCESS:-true}  # one-click read-only guest session on the login page
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:-}
       SEED_ANALYST_PASSWORD: ${SEED_ANALYST_PASSWORD:-}
     depends_on:

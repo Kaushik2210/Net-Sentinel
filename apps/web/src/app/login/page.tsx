@@ -4,16 +4,33 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { CyberCard } from "@/components/cyber/CyberCard";
 import { Logo } from "@/components/cyber/Logo";
-import { ApiError } from "@/lib/api";
+import Link from "next/link";
+import { ApiError, api } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 
 export default function LoginPage() {
-  const { user, loading, login } = useAuth();
+  const { user, loading, login, guest } = useAuth();
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [guestOk, setGuestOk] = useState(false);
+
+  useEffect(() => { api.playgroundOptions().then((o) => setGuestOk(o.guest_access)).catch(() => undefined); }, []);
+
+  async function asGuest() {
+    setBusy(true);
+    setError(null);
+    try {
+      await guest();
+      router.replace("/dashboard");
+    } catch {
+      setError("Guest access is unavailable right now.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   useEffect(() => {
     if (!loading && user) router.replace("/dashboard");
@@ -54,6 +71,10 @@ export default function LoginPage() {
               {busy ? "Authenticating…" : "Authenticate"}
             </button>
           </form>
+          <div className="mt-4 space-y-2 border-t border-border pt-4 text-center">
+            {guestOk && <button type="button" onClick={asGuest} disabled={busy} className="w-full border border-border py-2 text-[11px] uppercase tracking-[0.2em] text-muted transition hover:border-primary hover:text-primary disabled:opacity-40">Explore the live dashboard as a guest</button>}
+            <Link href="/try" className="block text-[11px] uppercase tracking-[0.2em] text-primary hover:underline">Try the detection playground, no sign-in</Link>
+          </div>
         </CyberCard>
         <p className="mt-4 text-center text-[10px] leading-relaxed text-muted">Sessions are role-based (ADMIN / ANALYST / VIEWER) and audit-logged.</p>
       </div>

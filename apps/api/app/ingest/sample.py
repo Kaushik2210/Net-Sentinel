@@ -28,7 +28,10 @@ ATTACKER = "10.0.20.22"
 C2 = "198.51.100.77"
 
 
-def build_sample_pcap(seed: int = 11) -> bytes:
+STAGES = ("sweep", "portscan", "bruteforce", "access", "dns", "exfil")
+
+
+def build_sample_pcap(seed: int = 11, stages: tuple[str, ...] = STAGES) -> bytes:
     from scapy.layers.dns import DNS, DNSQR
     from scapy.layers.inet import IP, TCP, UDP
     from scapy.packet import Raw
@@ -72,20 +75,21 @@ def build_sample_pcap(seed: int = 11) -> bytes:
                 dns(host, rng.choice(["updates.example.org", "cdn.example.net", "mail.example.com", "api.example.io"]), t)
                 flow(host, f"198.51.100.{rng.randint(2, 60)}", rng.randint(30000, 60000), 443, t + 0.1, fwd=rng.randint(300, 2000), rev=rng.randint(1000, 6000))
 
-    for i in range(24):  # 0:30 host sweep
+    for i in range(24 if "sweep" in stages else 0):  # 0:30 host sweep
         flow(ATTACKER, f"10.0.{rng.choice([10, 20, 30])}.{40 + i}", 40000 + i, 443, T0 + 30 + i * 1.2, ack_syn=False)
-    for i, port in enumerate(rng.sample(range(20, 9000), 40)):  # 1:30 port scan
+    for i, port in enumerate(rng.sample(range(20, 9000), 40 if "portscan" in stages else 0)):  # 1:30 port scan
         flow(ATTACKER, "10.0.30.12", 41000 + i, port, T0 + 90 + i * 0.4, ack_syn=False, rst_end=True)
-    for i in range(40):  # 2:30 SSH brute force: short, low-payload sessions
+    for i in range(40 if "bruteforce" in stages else 0):  # 2:30 SSH brute force: short, low-payload sessions
         flow(ATTACKER, "10.0.20.35", 42000 + i, 22, T0 + 150 + i * 0.9, fwd=120, rev=140, dur=0.6)
-    flow(ATTACKER, "10.0.20.35", 43000, 22, T0 + 210, fwd=9000, rev=14000, dur=40)  # 3:30 access
-    flow(ATTACKER, "10.0.20.12", 43001, 22, T0 + 232, fwd=8000, rev=12000, dur=25)  # lateral
-    flow(ATTACKER, "10.0.30.12", 43002, 22, T0 + 240, fwd=8000, rev=12000, dur=25)
-    flow(ATTACKER, "10.0.20.14", 43003, 22, T0 + 250, fwd=8000, rev=12000, dur=25)
-    for i in range(45):  # 4:30 DNS tunnelling-style lookups
+    if "access" in stages:
+        flow(ATTACKER, "10.0.20.35", 43000, 22, T0 + 210, fwd=9000, rev=14000, dur=40)  # 3:30 access
+        flow(ATTACKER, "10.0.20.12", 43001, 22, T0 + 232, fwd=8000, rev=12000, dur=25)  # lateral
+        flow(ATTACKER, "10.0.30.12", 43002, 22, T0 + 240, fwd=8000, rev=12000, dur=25)
+        flow(ATTACKER, "10.0.20.14", 43003, 22, T0 + 250, fwd=8000, rev=12000, dur=25)
+    for i in range(45 if "dns" in stages else 0):  # 4:30 DNS tunnelling-style lookups
         label = "".join(rng.choices(string.ascii_lowercase + string.digits, k=28))
         dns(ATTACKER, f"{label}.exfil-test.example", T0 + 270 + i * 1.0)
-    for i in range(4):  # 5:30 exfiltration ~1 MB per session
+    for i in range(4 if "exfil" in stages else 0):  # 5:30 exfiltration ~1 MB per session
         flow(ATTACKER, C2, 44000 + i, 443, T0 + 330 + i * 8, fwd=1_000_000, rev=2000, dur=6)
 
     pkts.sort(key=lambda p: float(p.time))

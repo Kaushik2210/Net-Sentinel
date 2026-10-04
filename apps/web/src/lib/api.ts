@@ -1,4 +1,4 @@
-import type { ResearchPayload, Indicator, IndicatorKind, IntelCheck, IntelMatch, Recommendation, AnalystAnswer, AnalystUser, AuditEntry, Note, WorkflowStatus, Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, SimulationResult, Summary, Topology, User } from "./types";
+import type { ResearchPayload, Indicator, IndicatorKind, IntelCheck, IntelMatch, Recommendation, AnalystAnswer, AnalystUser, AuditEntry, Note, WorkflowStatus, Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, PlaygroundOptions, SimulationResult, Summary, Topology, User } from "./types";
 
 // Unset -> local development default. Empty string -> same origin (production behind a reverse proxy), so the build
 // does not depend on the public hostname.
@@ -60,7 +60,11 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ username, password }),
     }),
+  guest: () => request<{ access_token: string; user: User }>("/api/v1/auth/guest", { method: "POST" }),
   me: () => request<User>("/api/v1/auth/me"),
+  playgroundOptions: () => request<PlaygroundOptions>("/api/v1/public/playground"),
+  playground: (scenario: string, thresholds: Record<string, Record<string, number>>) =>
+    request<{ scenario: string; result: ReplayResult }>("/api/v1/public/playground", { method: "POST", body: JSON.stringify({ scenario, thresholds }) }),
   summary: () => request<Summary>("/api/v1/analytics/summary"),
   topology: () => request<Topology>("/api/v1/network/topology"),
   devices: (params: { q?: string; device_type?: string; min_risk?: number; limit?: number } = {}) => {

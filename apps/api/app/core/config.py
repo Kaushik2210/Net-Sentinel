@@ -35,6 +35,9 @@ class Settings(BaseSettings):
     seed_analyst_password: str = ""
     seed_viewer_password: str = ""
 
+    # Lets visitors open the read-only dashboard without credentials (issues a VIEWER token). Off unless enabled.
+    guest_access: bool = False
+
     cors_origins: str = "http://localhost:3000"
     rate_limit_login: str = "10/minute"
     rate_limit_default: str = "240/minute"

@@ -14,6 +14,16 @@ NetSentinel's question is: **what is happening on this network, why is it suspic
 and what should an analyst check next?** Every score lists its contributing factors, and rule detections, behavioral anomalies, ML anomalies and
 correlated incidents are never conflated.
 
+## Public, no-login features
+
+Visitors need no account for these, and none of them accept uploads or store anything:
+
+- **Detection playground** (`/try`): choose a generated scenario (full attack chain, recon, brute force, exfiltration, or normal traffic only), tune the detector
+  thresholds with sliders, and see what gets flagged, the reconstructed chain, the risk factors and the MITRE techniques, then download a report. Normal-traffic
+  mode shows the detectors staying quiet. Server-generated traffic only, clamped parameters, rate limited.
+- **Guest session**: with `GUEST_ACCESS=true` the login page offers one click into the read-only live dashboard (a VIEWER token, no shared password).
+- Uploading your own capture stays limited to signed-in analysts, so a public instance never parses files from strangers.
+
 ## See it in two minutes
 
 1. Start the stack (below) and sign in as `analyst`.

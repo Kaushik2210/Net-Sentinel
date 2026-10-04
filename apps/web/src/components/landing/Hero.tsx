@@ -55,6 +55,9 @@ export function Hero() {
             <Link href="/dashboard" className="group inline-flex items-center gap-2 border border-primary bg-primary px-5 py-3 text-[12px] font-bold uppercase tracking-[0.22em] text-background shadow-[0_0_24px_-4px_rgba(0,229,255,0.7)] transition hover:shadow-[0_0_34px_0_rgba(0,229,255,0.8)]">
               Enter command center <ArrowRight className="size-4 transition group-hover:translate-x-1" />
             </Link>
+            <Link href="/try" className="inline-flex items-center gap-2 border border-primary/60 bg-primary/10 px-4 py-3 text-[12px] uppercase tracking-[0.2em] text-primary transition hover:bg-primary hover:text-background">
+              Try it, no sign-in
+            </Link>
             <a href="https://github.com/Kaushik2210/Net-Sentinel" className="inline-flex items-center gap-2 border border-border-strong px-4 py-3 text-[12px] uppercase tracking-[0.2em] text-muted transition hover:border-primary/50 hover:text-primary">
               <GithubMark className="size-4" /> Source
             </a>
