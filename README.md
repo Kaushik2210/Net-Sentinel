@@ -79,6 +79,8 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 | Demo finale: incident reconstructed | Investigation workspace with the evidence-bound analyst |
 | ![Research](docs/screenshots/09-research.jpg) | ![Analyze a capture](docs/screenshots/10-analyze-capture.jpg) |
 | Research mode: rule vs ML vs hybrid (synthetic benchmark) | Analyze a capture: drop a file, get the threats and evidence |
+| ![Detection playground](docs/screenshots/11-playground.jpg) | |
+| Public playground: tune detector thresholds, no sign-in | |
 
 ## Quick start (local)
 
