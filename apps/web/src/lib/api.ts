@@ -1,4 +1,4 @@
-import type { ResearchPayload, Indicator, IndicatorKind, IntelCheck, IntelMatch, Recommendation, AnalystAnswer, AnalystUser, AuditEntry, Note, WorkflowStatus, Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, Page, PlaygroundOptions, SimulationResult, Summary, Topology, User } from "./types";
+import type { ResearchPayload, Indicator, IndicatorKind, IntelCheck, IntelMatch, Recommendation, AnalystAnswer, AnalystUser, AuditEntry, Note, WorkflowStatus, Alert, AlertDetail, ReplayResult, ReplaySummary, MitreMatrix, TechniqueDetail, IncidentDetail, IncidentSummary, DeviceDetail, DeviceSummary, NetworkEvent, MlScore, ChallengeResult, Page, PlaygroundOptions, SimulationResult, Summary, Topology, User } from "./types";
 
 // Unset -> local development default. Empty string -> same origin (production behind a reverse proxy), so the build
 // does not depend on the public hostname.
@@ -63,6 +63,8 @@ export const api = {
   guest: () => request<{ access_token: string; user: User }>("/api/v1/auth/guest", { method: "POST" }),
   me: () => request<User>("/api/v1/auth/me"),
   playgroundOptions: () => request<PlaygroundOptions>("/api/v1/public/playground"),
+  challenge: (thresholds: Record<string, Record<string, number>>) =>
+    request<ChallengeResult>("/api/v1/public/challenge", { method: "POST", body: JSON.stringify({ thresholds }) }),
   playground: (scenario: string, thresholds: Record<string, Record<string, number>>) =>
     request<{ scenario: string; result: ReplayResult }>("/api/v1/public/playground", { method: "POST", body: JSON.stringify({ scenario, thresholds }) }),
   summary: () => request<Summary>("/api/v1/analytics/summary"),

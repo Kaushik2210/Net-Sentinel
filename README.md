@@ -21,6 +21,11 @@ Visitors need no account for these, and none of them accept uploads or store any
 - **Detection playground** (`/try`): choose a generated scenario (full attack chain, recon, brute force, exfiltration, or normal traffic only), tune the detector
   thresholds with sliders, and see what gets flagged, the reconstructed chain, the risk factors and the MITRE techniques, then download a report. Normal-traffic
   mode shows the detectors staying quiet. Server-generated traffic only, clamped parameters, rate limited.
+  - **Tuning challenge**: one attacker hides among two harmless-but-noisy hosts (an inventory scanner and a backup job). Move the sliders to catch every
+    attack stage with no false alarms; the score updates live and each false alarm costs 20 points.
+  - **Presets, share links and compare**: Sensitive / Default / Strict profiles, a link that carries your scenario and thresholds (validated against the
+    server's allow-list on load), and a pin-and-compare view that shows what a threshold change gained and lost.
+  - **Watch it unfold**: the same replay player used for real captures, running on the generated scenario.
 - **Guest session**: with `GUEST_ACCESS=true` the login page offers one click into the read-only live dashboard (a VIEWER token, no shared password).
 - Uploading your own capture stays limited to signed-in analysts, so a public instance never parses files from strangers.
 

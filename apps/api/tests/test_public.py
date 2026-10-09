@@ -9,7 +9,7 @@ def test_options_need_no_login(client):
     r = client.get("/api/v1/public/playground")
     assert r.status_code == 200
     body = r.json()
-    assert {s["id"] for s in body["scenarios"]} == {"full", "recon", "bruteforce", "exfil", "benign"}
+    assert {s["id"] for s in body["scenarios"]} == {"full", "recon", "bruteforce", "exfil", "noisy", "benign"}
     assert all(d["about"] for d in body["detectors"])
 
 
@@ -45,3 +45,25 @@ def test_guest_access_is_off_by_default_and_viewer_only_when_on(client):
         assert client.post("/api/v1/replay/sample", headers=h).status_code == 403
     finally:
         get_settings().guest_access = False
+
+
+def challenge(client, thresholds=None):
+    r = client.post("/api/v1/public/challenge", json={"thresholds": thresholds or {}})
+    assert r.status_code == 200, r.text
+    return r.json()
+
+
+def test_noisy_scenario_is_quiet_at_defaults_but_flags_when_over_tuned(client):
+    assert run(client, scenario="noisy").json()["result"]["alerts"] == []
+    tight = run(client, scenario="noisy", thresholds={"PortScanDetector": {"min_ports": 5, "min_hosts": 3}}).json()["result"]
+    assert tight["alerts"]
+
+
+def test_challenge_default_is_perfect_and_over_tuning_costs_points(client):
+    base = challenge(client)
+    assert base["perfect"] and base["score"] == 100
+    sloppy = challenge(client, {"PortScanDetector": {"min_ports": 5, "min_hosts": 3}, "BruteForceDetector": {"min_failures": 3}})
+    assert sloppy["false_alarms"] and sloppy["score"] < 100
+    blind = challenge(client, {"PortScanDetector": {"min_ports": 200, "min_hosts": 100}})
+    assert not next(s for s in blind["stages"] if s["detector"] == "PortScanDetector")["caught"]
+    assert blind["score"] < 100

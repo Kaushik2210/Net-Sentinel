@@ -39,7 +39,7 @@ independently audited**; do not expose it to untrusted networks without further 
 
 - The playground accepts no files. Scenarios are built server-side from fixed recipes, results are computed in memory and never stored.
 - Only an allow-list of detector parameters can be set, and each value is clamped to a fixed range, so a visitor cannot make a run expensive or inject arbitrary detector arguments. Unknown detectors, parameters or scenarios are rejected with 422.
-- Both routes are rate limited per client address (12 runs and 20 guest sessions per minute).
+- All public routes are rate limited per client address (12 playground runs, 30 challenge scores and 20 guest sessions per minute). Share links are parsed against the server's advertised scenarios and parameter ranges, so a crafted link cannot select anything else.
 - A guest session is always a VIEWER token for the existing `viewer` account (it cannot upload, simulate or write) and every issue is audit-logged. The route returns 404 unless enabled.
 
 ## Known limitations

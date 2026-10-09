@@ -92,6 +92,18 @@ def build_sample_pcap(seed: int = 11, stages: tuple[str, ...] = STAGES) -> bytes
     for i in range(4 if "exfil" in stages else 0):  # 5:30 exfiltration ~1 MB per session
         flow(ATTACKER, C2, 44000 + i, 443, T0 + 330 + i * 8, fwd=1_000_000, rev=2000, dur=6)
 
+    if "noise" in stages:
+        # Legitimate but noisy hosts: an asset-inventory scanner and a backup job. Both stay under the default thresholds
+        # and only look malicious if a detector is tuned too tightly, which is the trade-off the playground teaches.
+        inv, backup = "10.0.20.50", "10.0.20.52"
+        for i, port in enumerate((21, 25, 80, 110, 143, 443, 993, 8080)):
+            flow(inv, "10.0.30.20", 45000 + i, port, T0 + 120 + i * 0.5, ack_syn=False, rst_end=True)
+        for i in range(6):
+            flow(inv, f"10.0.20.{60 + i}", 45100 + i, 443, T0 + 140 + i * 0.8, ack_syn=False)
+        for i in range(4):
+            flow(backup, "10.0.20.60", 45200 + i, 22, T0 + 180 + i * 1.5, fwd=120, rev=140, dur=0.6)
+        flow(backup, "10.0.20.60", 45300, 22, T0 + 200, fwd=40_000, rev=30_000, dur=30)
+
     pkts.sort(key=lambda p: float(p.time))
     fd, path = tempfile.mkstemp(suffix=".pcap")
     os.close(fd)

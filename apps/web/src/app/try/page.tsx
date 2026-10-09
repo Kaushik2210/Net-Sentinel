@@ -1,18 +1,23 @@
 "use client";
 
+import { Link2, Pin } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Results } from "@/components/analyze/Results";
 import { CyberCard } from "@/components/cyber/CyberCard";
 import { Logo } from "@/components/cyber/Logo";
 import { PacketRain } from "@/components/fx/PacketRain";
+import { Challenge } from "@/components/playground/Challenge";
+import { Compare } from "@/components/playground/Compare";
+import { decode, encode, scaled, snapshot, type Snapshot, type Thresholds } from "@/components/playground/share";
+import { ReplayPlayer } from "@/components/replay/ReplayPlayer";
 import { api } from "@/lib/api";
 import type { PlaygroundOptions, ReplayResult } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-type Thresholds = Record<string, Record<string, number>>;
+const btn = "border px-3 py-2 text-[10px] uppercase tracking-[0.2em] transition disabled:opacity-30";
 
-/** Public, no-login playground: pick a generated scenario, tune detector thresholds and see what gets flagged. */
+/** Public, no-login playground: pick a generated scenario, tune detector thresholds, compare runs, watch it replay and try the tuning challenge. */
 export default function TryPage() {
   const [opts, setOpts] = useState<PlaygroundOptions | null>(null);
   const [scenario, setScenario] = useState("full");
@@ -22,6 +27,9 @@ export default function TryPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [runId, setRunId] = useState(0);
+  const [pinned, setPinned] = useState<Snapshot | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [watch, setWatch] = useState(false);
   const started = useRef(false);
 
   const run = useCallback(async (sc: string, th: Thresholds) => {
@@ -32,6 +40,7 @@ export default function TryPage() {
       setResult(res.result);
       setRunId((n) => n + 1);
       setRan({ scenario: sc, custom: Object.keys(th).length > 0 });
+      setWatch(false);
     } catch (e) {
       setError((e as Error).message || "The run failed.");
     } finally {
@@ -42,20 +51,35 @@ export default function TryPage() {
   useEffect(() => {
     if (started.current) return;
     started.current = true;
-    api.playgroundOptions().then((o) => { setOpts(o); return run("full", {}); }).catch(() => setError("The playground API is not reachable."));
+    api.playgroundOptions()
+      .then((o) => {
+        setOpts(o);
+        const shared = decode(window.location.search, o);
+        setScenario(shared.scenario);
+        setValues(shared.values);
+        return run(shared.scenario, diff(shared.values, o));
+      })
+      .catch(() => setError("The playground API is not reachable."));
   }, [run]);
 
-  const defaultOf = (det: string, key: string) => opts?.tunables.find((t) => t.detector === det)?.params.find((p) => p.key === key)?.default;
   // Only send values that differ from the defaults, so "default thresholds" really means none were changed.
-  const payload = (): Thresholds => {
+  function diff(v: Thresholds, o: PlaygroundOptions | null): Thresholds {
     const out: Thresholds = {};
-    for (const [d, ps] of Object.entries(values)) for (const [k, v] of Object.entries(ps)) {
-      if (v !== defaultOf(d, k)) (out[d] ??= {})[k] = v;
+    for (const [d, ps] of Object.entries(v)) for (const [k, val] of Object.entries(ps)) {
+      const def = o?.tunables.find((t) => t.detector === d)?.params.find((p) => p.key === k)?.default;
+      if (val !== def) (out[d] ??= {})[k] = val;
     }
     return out;
-  };
-  const custom = Object.keys(payload()).length > 0;
+  }
+  const payload = useMemo(() => diff(values, opts), [values, opts]);
+  const custom = Object.keys(payload).length > 0;
   const nameOf = (id: string) => opts?.scenarios.find((s) => s.id === id)?.label ?? id;
+  const now = useMemo(() => (result && ran ? snapshot(nameOf(ran.scenario), ran.custom, result) : null), [result, ran, opts]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function share() {
+    const url = `${window.location.origin}/try?${encode(scenario, payload)}`;
+    try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000); } catch { window.prompt("Copy this link", url); }
+  }
 
   return (
     <main className="bg-grid bg-vignette relative min-h-screen">
@@ -94,7 +118,13 @@ export default function TryPage() {
             </CyberCard>
 
             <CyberCard title="2 · Detector sensitivity" tone="info">
-              <p className="mb-3 text-[10px] text-muted">Lower thresholds catch more but raise false alarms; higher ones stay quiet but can miss real activity. Try making the port scan detector stricter, or the brute force one looser.</p>
+              <p className="mb-3 text-[10px] text-muted">Lower thresholds catch more but raise false alarms; higher ones stay quiet but can miss real activity.</p>
+              <div className="mb-4 flex flex-wrap items-center gap-2" role="group" aria-label="Presets">
+                <span className="text-[9px] uppercase tracking-[0.2em] text-muted">Presets</span>
+                <button onClick={() => setValues(scaled(opts, 0.5))} className={cn(btn, "border-warning/50 text-warning hover:bg-warning/10")}>Sensitive</button>
+                <button onClick={() => setValues({})} className={cn(btn, "border-border text-muted hover:border-primary hover:text-primary")}>Default</button>
+                <button onClick={() => setValues(scaled(opts, 2))} className={cn(btn, "border-info/50 text-info hover:bg-info/10")}>Strict</button>
+              </div>
               <div className="space-y-3">
                 {opts.tunables.flatMap((t) => t.params.map((p) => {
                   const v = values[t.detector]?.[p.key] ?? p.default;
@@ -112,18 +142,27 @@ export default function TryPage() {
                 }))}
               </div>
               <div className="mt-4 flex flex-wrap items-center gap-2">
-                <button disabled={busy} onClick={() => run(scenario, payload())} className="border border-primary bg-primary px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-background hover:shadow-[0_0_20px_rgba(0,229,255,0.6)] disabled:opacity-40">
+                <button disabled={busy} onClick={() => run(scenario, payload)} className="border border-primary bg-primary px-5 py-2 text-[11px] font-bold uppercase tracking-[0.2em] text-background hover:shadow-[0_0_20px_rgba(0,229,255,0.6)] disabled:opacity-40">
                   {busy ? "Running…" : "Run analysis"}
                 </button>
-                <button disabled={busy || !custom} onClick={() => setValues({})} className="border border-border px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-muted hover:border-primary hover:text-primary disabled:opacity-30">Reset to defaults</button>
+                <button disabled={busy || !custom} onClick={() => setValues({})} className={cn(btn, "border-border text-muted hover:border-primary hover:text-primary")}>Reset</button>
+                <button onClick={share} className={cn(btn, "inline-flex items-center gap-1.5 border-border text-muted hover:border-primary hover:text-primary")}><Link2 className="size-3.5" /> {copied ? "Link copied" : "Share these settings"}</button>
               </div>
             </CyberCard>
           </div>
         )}
 
-        {result && ran && (
+        {opts && <Challenge thresholds={payload} />}
+
+        {result && ran && now && (
           <div className="space-y-3 pt-1">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-muted">Result · {nameOf(ran.scenario)} · {ran.custom ? "custom thresholds" : "default thresholds"}</p>
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-muted">Result · {nameOf(ran.scenario)} · {ran.custom ? "custom thresholds" : "default thresholds"}</p>
+              <button onClick={() => setPinned(now)} className={cn(btn, "inline-flex items-center gap-1.5 border-warning/50 text-warning hover:bg-warning/10")}><Pin className="size-3.5" /> Pin this run to compare</button>
+              {!result.empty && <button onClick={() => setWatch((w) => !w)} className={cn(btn, "border-primary/60 text-primary hover:bg-primary hover:text-background")}>{watch ? "Hide replay" : "Watch it unfold"}</button>}
+            </div>
+            {pinned && <Compare base={pinned} now={now} onClear={() => setPinned(null)} />}
+            {watch && !result.empty && <CyberCard title="Replay" tone="primary"><ReplayPlayer key={runId} result={result} autoPlay /></CyberCard>}
             <Results key={runId} name={nameOf(ran.scenario)} result={result}
               footer={<>Simulation only: this traffic is generated, not captured from a real network. {result.ingest?.heuristics} Thresholds in effect: {JSON.stringify(result.settings.overrides)}.</>} />
           </div>

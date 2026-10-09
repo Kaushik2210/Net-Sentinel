@@ -15,7 +15,7 @@ from app.core.config import get_settings
 from app.core.ratelimit import limiter
 from app.detection.base import registry
 from app.ingest.pcap import parse_pcap
-from app.ingest.sample import STAGES, build_sample_pcap
+from app.ingest.sample import ATTACKER, STAGES, build_sample_pcap
 from app.replay.engine import build_replay
 
 router = APIRouter(prefix="/public", tags=["public"])
@@ -25,6 +25,10 @@ SCENARIOS: dict[str, dict] = {
     "recon": {"label": "Reconnaissance only", "stages": ("sweep", "portscan"), "blurb": "A host sweep followed by a port scan. No access is gained."},
     "bruteforce": {"label": "Brute force and access", "stages": ("bruteforce", "access"), "blurb": "Repeated SSH logins, then a successful long session and lateral SSH."},
     "exfil": {"label": "DNS tunnelling and exfiltration", "stages": ("dns", "exfil"), "blurb": "Encoded DNS lookups followed by a large upload to an external host."},
+    "noisy": {
+        "label": "Normal but noisy traffic", "stages": ("noise",),
+        "blurb": "An inventory scanner and a backup job that look odd but are legitimate. Over-tune the detectors and they get flagged.",
+    },
     "benign": {"label": "Normal traffic only", "stages": (), "blurb": "Six workstations doing ordinary DNS and HTTPS. Use it to check the detectors stay quiet."},
 }
 
@@ -101,3 +105,44 @@ async def run(request: Request, body: PlaygroundRequest) -> dict:
         "heuristics": "Synthetic traffic generated on the server; authentication outcomes are inferred from flow shape.",
     }
     return {"scenario": body.scenario, "result": result}
+
+
+# What the challenge attacker does, and which detector should catch each part.
+EXPECTED = {
+    "PortScanDetector": "Scanning (sweep and port scan)",
+    "BruteForceDetector": "SSH brute force",
+    "CredentialCompromiseDetector": "Login success after failures",
+    "LateralMovementDetector": "Lateral movement",
+    "DNSAnomalyDetector": "DNS tunnelling",
+    "DataExfiltrationDetector": "Data exfiltration",
+}
+
+
+@lru_cache(maxsize=1)
+def _challenge_events():
+    events, _ = parse_pcap(build_sample_pcap(stages=(*STAGES, "noise")))
+    return events
+
+
+class ChallengeRequest(BaseModel):
+    thresholds: dict[str, dict[str, int]] = Field(default_factory=dict)
+
+
+@router.post("/challenge")
+@limiter.limit("30/minute")
+async def challenge(request: Request, body: ChallengeRequest) -> dict:
+    """Tuning game: one attacker plus two harmless-but-noisy hosts. Catch every attack stage without flagging the innocent hosts."""
+    overrides = {"DataExfiltrationDetector": {"min_bytes": TUNABLES["DataExfiltrationDetector"]["min_bytes"][0]}}
+    for det, params in _overrides(body.thresholds).items():
+        overrides.setdefault(det, {}).update(params)
+    events = await asyncio.to_thread(_challenge_events)
+    result = await asyncio.to_thread(build_replay, events, overrides)
+    caught = {a["detector"] for a in result["alerts"] if a["source"] == ATTACKER}
+    false_alarms = [{"detector": a["detector"], "source": a["source"], "event_type": a["event_type"]} for a in result["alerts"] if a["source"] != ATTACKER]
+    got = sum(d in caught for d in EXPECTED)
+    score = max(0, round(100 * got / len(EXPECTED)) - 20 * len(false_alarms))
+    return {
+        "stages": [{"detector": d, "label": label, "caught": d in caught} for d, label in EXPECTED.items()],
+        "false_alarms": false_alarms, "score": score, "perfect": got == len(EXPECTED) and not false_alarms,
+        "innocent_hosts": ["10.0.20.50 (inventory scanner)", "10.0.20.52 (backup job)"],
+    }

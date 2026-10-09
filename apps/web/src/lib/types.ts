@@ -148,3 +148,9 @@ export interface PlaygroundOptions {
   tunables: { detector: string; params: { key: string; default: number; min: number; max: number; label: string }[] }[];
   detectors: { name: string; class: string; mitre: string[]; about: string }[];
 }
+
+export interface ChallengeResult {
+  stages: { detector: string; label: string; caught: boolean }[];
+  false_alarms: { detector: string; source: string; event_type: string }[];
+  score: number; perfect: boolean; innocent_hosts: string[];
+}
