@@ -155,8 +155,8 @@ export function HeroTopology({ className }: { className?: string }) {
         )}
       </svg>
 
-      <div className="grid grid-cols-[1fr_auto] items-center gap-3 border-t border-border px-3 py-2">
-        <div className="flex items-center gap-1" role="list" aria-label="Stage">
+      <div className="grid grid-cols-1 items-center gap-3 border-t sm:grid-cols-[1fr_auto] border-border px-3 py-2">
+        <div className="flex flex-wrap items-center gap-1" role="list" aria-label="Stage">
           {(pwn ? [] : PHASES).map((p, k) => (
             <span key={p.id} role="listitem" className={cn(
               "border px-1.5 py-0.5 text-[9px] tracking-[0.18em] transition-colors",
@@ -166,12 +166,12 @@ export function HeroTopology({ className }: { className?: string }) {
             )}>{p.id}</span>
           ))}
         </div>
-        <div className="flex gap-4 text-[10px] tracking-widest text-muted">
+        <div className="flex flex-wrap gap-x-4 text-[10px] tracking-widest text-muted">
           <span>NODES <b className="text-foreground">{NODES.length}</b></span>
           <span>ANOM <b className={anomalies ? "text-warning" : "text-foreground"}>{anomalies}</b></span>
           <span>THREATS <b className={threats ? "text-danger" : "text-foreground"}>{threats}</b></span>
         </div>
-        <p className="col-span-2 text-[11px] text-muted"><span className="text-primary">&gt;</span> {phase.note}<span className="animate-blink">_</span></p>
+        <p className="text-[11px] text-muted sm:col-span-2"><span className="text-primary">&gt;</span> {phase.note}<span className="animate-blink">_</span></p>
       </div>
     </div>
   );

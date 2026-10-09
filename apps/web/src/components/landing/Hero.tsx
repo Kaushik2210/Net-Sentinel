@@ -37,13 +37,13 @@ export function Hero() {
     <div className="relative overflow-hidden">
       <div className="bg-grid bg-vignette absolute inset-0 [mask-image:radial-gradient(ellipse_at_center,black_40%,transparent_85%)]" aria-hidden />
       <PacketRain className="[mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]" intensity={0.45} />
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[1.05fr_1fr] lg:pt-24">
-        <div>
+      <div className="relative mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:pt-24">
+        <div className="min-w-0">
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="mb-6 flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-muted">
             <span className="size-1.5 animate-blink bg-success" /> Network digital twin &middot; v0.1 research build
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
-            className="animate-flicker font-display text-5xl font-black tracking-[0.12em] text-foreground glow-primary sm:text-6xl">
+            className="animate-flicker font-display text-[clamp(1.75rem,9vw,3rem)] font-black tracking-[0.12em] text-foreground glow-primary sm:text-6xl">
             NET<GlitchText className="text-primary">SENTINEL</GlitchText>
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }}
