@@ -32,7 +32,7 @@ export function Sidebar() {
           <>
             <Icon className="size-4 shrink-0" />
             <span className="hidden flex-1 truncate lg:block">{label}</span>
-            {phase && <span className="hidden text-[8px] tracking-widest text-muted/70 lg:block">P{phase}</span>}
+            {phase && <span className="hidden text-[11px] tracking-widest text-muted/70 lg:block">P{phase}</span>}
           </>
         );
         const cls = cn("mx-2 mb-0.5 flex items-center gap-3 border-l-2 px-3 py-2 text-[11px] uppercase tracking-[0.15em]");
@@ -47,7 +47,7 @@ export function Sidebar() {
           </Link>
         );
       })}
-      <div className="mt-auto hidden px-4 text-[9px] leading-relaxed tracking-widest text-muted/60 lg:block">
+      <div className="mt-auto hidden px-4 text-[11px] leading-relaxed tracking-widest text-muted/60 lg:block">
         NETSENTINEL v0.1<br />RESEARCH BUILD
       </div>
     </nav>

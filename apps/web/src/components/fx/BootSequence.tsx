@@ -56,7 +56,7 @@ export function BootSequence() {
           <p key={l} style={{ animation: "boot-line 0.25s both" }} className={i === LINES.length - 1 ? "text-success" : undefined}><span className="text-muted">&gt;</span> {l}</p>
         ))}
         <p className="animate-blink">&#9608;</p>
-        <p className="pt-4 text-[10px] uppercase tracking-[0.3em] text-muted">click or press a key to skip</p>
+        <p className="pt-4 text-[11px] uppercase tracking-[0.3em] text-muted">click or press a key to skip</p>
       </div>
     </div>
   );

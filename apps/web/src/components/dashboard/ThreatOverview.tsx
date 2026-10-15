@@ -33,7 +33,7 @@ export function ThreatOverview({ topology }: { topology: Topology | null }) {
         <Radar size={132} blips={blips} className="shrink-0" />
         <div className="flex-1 space-y-1.5">
           {ORDER.map((s) => (
-            <div key={s} className="grid grid-cols-[4.2rem_1fr_1.6rem] items-center gap-2 text-[10px]">
+            <div key={s} className="grid grid-cols-[4.2rem_1fr_1.6rem] items-center gap-2 text-[11px]">
               <span className={SEVERITY[s].text}>{SEVERITY[s].label}</span>
               <span className="h-1.5 bg-border/60"><span className="block h-full" style={{ width: `${(bands[s] / total) * 100}%`, background: SEVERITY[s].hex }} /></span>
               <span className="text-right tabular-nums text-muted">{bands[s]}</span>
@@ -41,7 +41,7 @@ export function ThreatOverview({ topology }: { topology: Topology | null }) {
           ))}
         </div>
       </div>
-      <p className="mt-3 text-[10px] leading-relaxed text-muted">Bands are behavioral risk (baseline deviation), not detection alerts. Rule and ML detections arrive with phases 3–4.</p>
+      <p className="mt-3 text-[11px] leading-relaxed text-muted">Bands are behavioral risk (baseline deviation), not detection alerts. Rule and ML detections arrive with phases 3–4.</p>
     </CyberCard>
   );
 }

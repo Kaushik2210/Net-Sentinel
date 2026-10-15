@@ -49,7 +49,7 @@ export default function IncidentsPage() {
           : !list ? <p className="p-4 text-[11px] text-muted">Loading…</p>
           : list.length === 0 ? (
             <div className="p-5 text-center"><p className="text-[12px]">No incidents.</p>
-              <p className="mt-1 text-[10px] leading-relaxed text-muted">Incidents appear when related alerts are correlated into a chain. Use <b>Inject simulated attack</b> on the dashboard.</p></div>
+              <p className="mt-1 text-[11px] leading-relaxed text-muted">Incidents appear when related alerts are correlated into a chain. Use <b>Inject simulated attack</b> on the dashboard.</p></div>
           ) : (
             <ul>{list.map((i) => (
               <li key={i.id}>
@@ -57,7 +57,7 @@ export default function IncidentsPage() {
                   className={cn("w-full border-b border-border/60 px-3 py-2.5 text-left hover:bg-panel-2", i.id === activeId && "bg-primary/5")}>
                   <div className="flex items-center justify-between gap-2"><ThreatBadge severity={i.severity} /><span className="font-display text-sm font-bold tabular-nums">{i.risk_score}</span></div>
                   <div className="mt-1.5 text-[12px] leading-snug">{i.title}</div>
-                  <div className="mt-1 text-[10px] text-muted">{i.status} · {timeAgo(i.last_seen)}</div>
+                  <div className="mt-1 text-[11px] text-muted">{i.status} · {timeAgo(i.last_seen)}</div>
                 </button>
               </li>))}</ul>
           )}
@@ -72,10 +72,10 @@ export default function IncidentsPage() {
                 <div className="flex flex-wrap items-center gap-4">
                   <ThreatScore score={shown.risk_score} size={88} />
                   <div className="min-w-0 flex-1">
-                    <div className="mb-1 flex flex-wrap items-center gap-2"><DetectionClassBadge kind="CORRELATED" /><ThreatBadge severity={shown.severity} /><span className="text-[10px] uppercase tracking-widest text-muted">{shown.status}</span></div>
+                    <div className="mb-1 flex flex-wrap items-center gap-2"><DetectionClassBadge kind="CORRELATED" /><ThreatBadge severity={shown.severity} /><span className="text-[11px] uppercase tracking-widest text-muted">{shown.status}</span></div>
                     <h1 className="font-display text-lg font-bold leading-tight">{shown.title}</h1>
                     <p className="mt-1 text-[11px] text-muted">{shown.summary}</p>
-                    <p className="mt-1 text-[10px] tracking-widest text-muted">
+                    <p className="mt-1 text-[11px] tracking-widest text-muted">
                       {shown.steps.length} STEPS · {shown.techniques.length} TECHNIQUES · {shown.evidence_count} EVIDENCE EVENTS · {formatClock(shown.first_seen)}–{formatClock(shown.last_seen)}Z
                     </p>
                   </div>
@@ -91,7 +91,7 @@ export default function IncidentsPage() {
                     <ul className="space-y-2">{shown.supporting.map((a) => (
                       <li key={a.id} className="text-[11px]"><div className="mb-0.5 flex items-center gap-2"><DetectionClassBadge kind={a.detection_class} /><span className="text-muted">{a.source}</span></div>{a.explanation}</li>))}</ul>
                   )}
-                  <p className="mt-2 text-[10px] text-muted">Context only: these are not steps in the chain.</p>
+                  <p className="mt-2 text-[11px] text-muted">Context only: these are not steps in the chain.</p>
                 </CyberCard>
               </div>
             </>

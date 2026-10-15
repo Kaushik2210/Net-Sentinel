@@ -53,17 +53,17 @@ export default function LoginPage() {
   const field = "w-full border border-border bg-black/60 px-3 py-2 text-[13px] text-foreground outline-none transition focus:border-primary focus:shadow-[0_0_0_1px_var(--color-primary)]";
 
   return (
-    <main className="bg-grid bg-vignette grid min-h-screen place-items-center px-4">
+    <main id="main" className="bg-grid bg-vignette grid min-h-screen place-items-center px-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex justify-center"><Logo /></div>
         <CyberCard tone="primary" title="Operator authentication">
           <form onSubmit={submit} className="space-y-4" noValidate>
             <label className="block">
-              <span className="mb-1 block text-[10px] uppercase tracking-[0.25em] text-muted">Username</span>
+              <span className="mb-1 block text-[11px] uppercase tracking-[0.25em] text-muted">Username</span>
               <input className={field} value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" autoFocus required maxLength={48} />
             </label>
             <label className="block">
-              <span className="mb-1 block text-[10px] uppercase tracking-[0.25em] text-muted">Password</span>
+              <span className="mb-1 block text-[11px] uppercase tracking-[0.25em] text-muted">Password</span>
               <input className={field} type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required maxLength={72} />
             </label>
             {error && <p role="alert" className="border border-danger/40 bg-danger/10 px-3 py-2 text-[11px] text-danger">{error}</p>}
@@ -76,7 +76,7 @@ export default function LoginPage() {
             <Link href="/try" className="block text-[11px] uppercase tracking-[0.2em] text-primary hover:underline">Try the detection playground, no sign-in</Link>
           </div>
         </CyberCard>
-        <p className="mt-4 text-center text-[10px] leading-relaxed text-muted">Sessions are role-based (ADMIN / ANALYST / VIEWER) and audit-logged.</p>
+        <p className="mt-4 text-center text-[11px] leading-relaxed text-muted">Sessions are role-based (ADMIN / ANALYST / VIEWER) and audit-logged.</p>
       </div>
     </main>
   );

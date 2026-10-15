@@ -27,7 +27,7 @@ export function Intelligence() {
         lead="Scoring is transparent arithmetic, not a black box: ratio against the baseline maximum, capped per metric, plus a criticality amplifier that only applies when something already deviates.">
         <Reveal className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
           <div className="border border-border bg-panel p-5">
-            <div className="mb-4 flex items-center justify-between text-[10px] uppercase tracking-[0.2em] text-muted">
+            <div className="mb-4 flex items-center justify-between text-[11px] uppercase tracking-[0.2em] text-muted">
               <span>Example: PC-07 baseline vs current</span><DetectionClassBadge kind="BEHAVIORAL" />
             </div>
             <div className="space-y-4">
@@ -41,7 +41,7 @@ export function Intelligence() {
                 );
               })}
             </div>
-            <p className="mt-4 text-[10px] text-muted">Cyan = baseline maximum; red = observed. Illustrative values; the live dashboard computes these from the simulated network.</p>
+            <p className="mt-4 text-[11px] text-muted">Cyan = baseline maximum; red = observed. Illustrative values; the live dashboard computes these from the simulated network.</p>
           </div>
           <TerminalPanel title="risk-breakdown --device PC-07" className="self-start">
             <div>+20  SSH connection rate</div><div>+20  External upload volume</div><div>+15  DNS request rate</div><div>+9   New destinations</div><div>+3   Asset criticality</div>
@@ -58,23 +58,23 @@ export function Intelligence() {
               <span className="absolute -left-[31px] top-1 size-2.5 border border-danger bg-background" style={{ boxShadow: "0 0 8px #ff3b30" }} />
               <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
                 <span className="font-display text-[13px] font-bold uppercase tracking-wider">{stage}</span>
-                <span className="text-[10px] tracking-widest text-info">{tech}</span>
-                <span className="text-[10px] text-muted">{time}</span>
+                <span className="text-[11px] tracking-widest text-info">{tech}</span>
+                <span className="text-[11px] text-muted">{time}</span>
               </div>
               <div className="text-[12px] text-muted">{detail}</div>
             </Reveal>
           ))}
         </ol>
-        <p className="mt-6 text-[10px] text-muted">Example chain for illustration.</p>
+        <p className="mt-6 text-[11px] text-muted">Example chain for illustration.</p>
       </Section>
 
       <Section id="mitre" index="06" eyebrow="MITRE ATT&CK" title="Detections mapped to techniques, stored as data, not hard-coded UI" status="LIVE">
         <Reveal className="grid grid-cols-2 gap-px border border-border bg-border sm:grid-cols-5">
           {TACTICS.map((t) => (
             <div key={t} className="bg-panel p-3">
-              <div className="text-[9px] uppercase tracking-[0.18em] text-muted">{t}</div>
+              <div className="text-[11px] uppercase tracking-[0.18em] text-muted">{t}</div>
               <div className="mt-2 flex min-h-5 flex-wrap gap-1">
-                {(HIT[t] ?? []).map((id) => <span key={id} className="border border-info/50 bg-info/10 px-1 text-[10px] text-info">{id}</span>)}
+                {(HIT[t] ?? []).map((id) => <span key={id} className="border border-info/50 bg-info/10 px-1 text-[11px] text-info">{id}</span>)}
               </div>
             </div>
           ))}

@@ -65,7 +65,7 @@ export default function DemoPage() {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="font-display text-[12px] uppercase tracking-[0.25em]"><span className="mr-2 text-primary">▍</span>Attack demonstration</h1>
-        <span className="text-[10px] text-muted">~75 s · synthetic traffic through the real pipeline: pcap → flows → detection → correlation</span>
+        <span className="text-[11px] text-muted">~75 s · synthetic traffic through the real pipeline: pcap → flows → detection → correlation</span>
       </div>
       {error && <p role="alert" className="border border-danger/40 bg-danger/10 px-3 py-2 text-[12px] text-danger">{error}</p>}
 
@@ -89,7 +89,7 @@ export default function DemoPage() {
           <div className="grid grid-cols-7 gap-1" aria-label="Attack stages">
             {(stages.length ? stages : []).map((s) => {
               const on = s.at <= t;
-              return <div key={s.stage + s.at} className={cn("border px-1.5 py-1.5 text-center text-[9px] uppercase leading-tight tracking-wider transition", on ? "border-danger/60 bg-danger/10 text-danger" : "border-border text-muted/50")}>{s.stage}</div>;
+              return <div key={s.stage + s.at} className={cn("border px-1.5 py-1.5 text-center text-[11px] uppercase leading-tight tracking-wider transition", on ? "border-danger/60 bg-danger/10 text-danger" : "border-border text-muted/50")}>{s.stage}</div>;
             })}
           </div>
           <p role="status" aria-live="polite" className="min-h-10 border border-border bg-black/40 px-3 py-2 text-[12px]">
@@ -105,13 +105,13 @@ export default function DemoPage() {
                   <p className="mt-1 text-[11px] text-muted">{summary.steps} correlated stages from a single source, with every step linked to evidence.</p>
                 </div>
                 <dl className="flex gap-8 text-center">
-                  <div><dt className="text-[9px] uppercase tracking-widest text-muted">Risk</dt><dd className="mt-1 flex items-center gap-2"><span className="font-display text-2xl font-bold tabular-nums">{summary.score}</span><ThreatBadge severity={severityForRisk(summary.score)} /></dd></div>
-                  <div><dt className="text-[9px] uppercase tracking-widest text-muted">MITRE techniques</dt><dd className="mt-1 font-display text-2xl font-bold tabular-nums text-info">{summary.techniques}</dd></div>
-                  <div><dt className="text-[9px] uppercase tracking-widest text-muted">Linked evidence events</dt><dd className="mt-1 font-display text-2xl font-bold tabular-nums text-primary">{summary.evidence}</dd></div>
+                  <div><dt className="text-[11px] uppercase tracking-widest text-muted">Risk</dt><dd className="mt-1 flex items-center gap-2"><span className="font-display text-2xl font-bold tabular-nums">{summary.score}</span><ThreatBadge severity={severityForRisk(summary.score)} /></dd></div>
+                  <div><dt className="text-[11px] uppercase tracking-widest text-muted">MITRE techniques</dt><dd className="mt-1 font-display text-2xl font-bold tabular-nums text-info">{summary.techniques}</dd></div>
+                  <div><dt className="text-[11px] uppercase tracking-widest text-muted">Linked evidence events</dt><dd className="mt-1 font-display text-2xl font-bold tabular-nums text-primary">{summary.evidence}</dd></div>
                 </dl>
                 <div className="flex gap-2">
-                  <button onClick={start} className="border border-border px-3 py-2 text-[10px] uppercase tracking-widest text-muted hover:border-primary hover:text-primary">Run again</button>
-                  <Link href="/replay" className="border border-primary px-3 py-2 text-[10px] uppercase tracking-widest text-primary hover:bg-primary hover:text-background">Open full replay</Link>
+                  <button onClick={start} className="border border-border px-3 py-2 text-[11px] uppercase tracking-widest text-muted hover:border-primary hover:text-primary">Run again</button>
+                  <Link href="/replay" className="border border-primary px-3 py-2 text-[11px] uppercase tracking-widest text-primary hover:bg-primary hover:text-background">Open full replay</Link>
                 </div>
               </div>
             </CyberCard>

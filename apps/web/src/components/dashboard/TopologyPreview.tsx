@@ -30,11 +30,11 @@ export function TopologyPreview({ topology, selectedId, onSelect, loading, error
 
   return (
     <CyberCard title="Network topology" tone="primary" className="h-full" bodyClassName="relative h-[calc(100%-2.4rem)] min-h-[320px] p-0"
-      actions={<span className="text-[9px] tracking-[0.2em] text-muted">{topology ? `${topology.nodes.length} NODES · ${topology.edges.length} LINKS` : ""}</span>}>
+      actions={<span className="text-[11px] tracking-[0.2em] text-muted">{topology ? `${topology.nodes.length} NODES · ${topology.edges.length} LINKS` : ""}</span>}>
       {error ? (
         <div className="grid h-full place-items-center p-6 text-center">
           <div><p className="text-[12px] text-danger">{error}</p>
-            <button onClick={onRetry} className="mt-3 border border-border px-3 py-1.5 text-[10px] uppercase tracking-widest text-muted hover:border-primary hover:text-primary">Retry</button></div>
+            <button onClick={onRetry} className="mt-3 border border-border px-3 py-1.5 text-[11px] uppercase tracking-widest text-muted hover:border-primary hover:text-primary">Retry</button></div>
         </div>
       ) : loading || !topology || !view ? (
         <div className="grid h-full place-items-center text-[11px] uppercase tracking-[0.3em] text-muted">Mapping network<span className="animate-blink">_</span></div>
@@ -56,7 +56,7 @@ export function TopologyPreview({ topology, selectedId, onSelect, loading, error
                 {sel && <circle r="19" fill="none" stroke="#00e5ff" strokeWidth="1.5" strokeDasharray="4 3" />}
                 <circle r="9" fill="#05070a" stroke={risky ? col : "#2a4256"} strokeWidth="2" />
                 {risky && <circle r="3.5" fill={col} />}
-                <text y="24" textAnchor="middle" fontSize="11" fill={risky ? col : "#6b8594"} letterSpacing="0.5">{n.hostname}</text>
+                <text y="24" textAnchor="middle" fontSize="11" fill={risky ? col : "#8aa4b3"} letterSpacing="0.5">{n.hostname}</text>
                 <title>{`${n.hostname} (${n.ip}) risk ${n.risk_score}`}</title>
               </g>
             );

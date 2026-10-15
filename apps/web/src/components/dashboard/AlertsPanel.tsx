@@ -38,7 +38,7 @@ export function AlertsPanel({ alerts, onReset, simulated }: Props) {
     }
   }
 
-  const btn = "border px-2 py-1 text-[9px] uppercase tracking-[0.18em] transition disabled:cursor-not-allowed disabled:opacity-40";
+  const btn = "border px-2 py-1 text-[11px] uppercase tracking-[0.18em] transition disabled:cursor-not-allowed disabled:opacity-40";
   return (
     <CyberCard title="Detections" tone="danger" bodyClassName="p-0"
       actions={canRun && (
@@ -47,11 +47,11 @@ export function AlertsPanel({ alerts, onReset, simulated }: Props) {
           {user?.role === "ADMIN" && <button disabled={!!busy} onClick={() => run("reset")} className={cn(btn, "border-border text-muted hover:text-foreground")}>Reset</button>}
         </div>
       )}>
-      {msg && <p role="status" className="border-b border-border/60 px-3 py-1.5 text-[10px] text-warning">{msg}</p>}
+      {msg && <p role="status" className="border-b border-border/60 px-3 py-1.5 text-[11px] text-warning">{msg}</p>}
       {alerts.length === 0 ? (
         <div className="px-4 py-6 text-center">
           <p className="text-[12px] text-foreground">No detections.</p>
-          <p className="mt-1 text-[10px] leading-relaxed text-muted">The baseline traffic is clean.{canRun ? " Inject a labelled synthetic attack to see the engine work." : ""}</p>
+          <p className="mt-1 text-[11px] leading-relaxed text-muted">The baseline traffic is clean.{canRun ? " Inject a labelled synthetic attack to see the engine work." : ""}</p>
         </div>
       ) : (
         <ul className="max-h-[300px] overflow-y-auto">{alerts.map((a) => <AlertRow key={a.id} alert={a} />)}</ul>

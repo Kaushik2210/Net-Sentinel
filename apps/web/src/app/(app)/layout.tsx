@@ -1,15 +1,23 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { TopBar } from "@/components/shell/TopBar";
 import { useAuth } from "@/lib/auth";
 import { SummaryProvider } from "@/lib/summary";
 
+const TITLES: Record<string, string> = {
+  dashboard: "Command center", analyze: "Analyze capture", demo: "Attack demo", network: "Network twin", incidents: "Incidents",
+  investigate: "Investigate", replay: "PCAP replay", mitre: "MITRE ATT&CK", "threat-intel": "Threat intel", research: "Research",
+};
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const path = usePathname();
+
+  const name = TITLES[path.split("/")[1] ?? ""];
 
   useEffect(() => {
     if (!loading && !user) router.replace("/login");
@@ -25,11 +33,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <SummaryProvider>
+      {name && <title>{`${name} | NetSentinel`}</title>}
       <div className="flex h-screen flex-col">
         <TopBar />
         <div className="flex min-h-0 flex-1">
           <Sidebar />
-          <main className="bg-grid min-w-0 flex-1 overflow-y-auto p-4">{children}</main>
+          <main id="main" className="bg-grid min-w-0 flex-1 overflow-y-auto p-4">{children}</main>
         </div>
       </div>
     </SummaryProvider>

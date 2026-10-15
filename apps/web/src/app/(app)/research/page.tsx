@@ -17,10 +17,10 @@ function Confusion({ m }: { m: MethodMetrics }) {
   const cell = "border border-border px-3 py-2 text-center tabular-nums";
   return (
     <table className="w-full text-[11px]" aria-label="Confusion matrix">
-      <thead><tr><th /><th className="px-2 text-[9px] font-normal uppercase tracking-widest text-muted">Pred. attack</th><th className="px-2 text-[9px] font-normal uppercase tracking-widest text-muted">Pred. benign</th></tr></thead>
+      <thead><tr><th /><th className="px-2 text-[11px] font-normal uppercase tracking-widest text-muted">Pred. attack</th><th className="px-2 text-[11px] font-normal uppercase tracking-widest text-muted">Pred. benign</th></tr></thead>
       <tbody>
-        <tr><th className="pr-2 text-left text-[9px] font-normal uppercase tracking-widest text-muted">Actual attack</th><td className={cn(cell, "bg-success/10 text-success")}>{m.tp}</td><td className={cn(cell, "bg-danger/10 text-danger")}>{m.fn}</td></tr>
-        <tr><th className="pr-2 text-left text-[9px] font-normal uppercase tracking-widest text-muted">Actual benign</th><td className={cn(cell, "bg-warning/10 text-warning")}>{m.fp}</td><td className={cn(cell, "bg-success/5 text-muted")}>{m.tn}</td></tr>
+        <tr><th className="pr-2 text-left text-[11px] font-normal uppercase tracking-widest text-muted">Actual attack</th><td className={cn(cell, "bg-success/10 text-success")}>{m.tp}</td><td className={cn(cell, "bg-danger/10 text-danger")}>{m.fn}</td></tr>
+        <tr><th className="pr-2 text-left text-[11px] font-normal uppercase tracking-widest text-muted">Actual benign</th><td className={cn(cell, "bg-warning/10 text-warning")}>{m.fp}</td><td className={cn(cell, "bg-success/5 text-muted")}>{m.tn}</td></tr>
       </tbody>
     </table>
   );
@@ -52,8 +52,8 @@ export default function ResearchPage() {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-3">
         <h1 className="font-display text-[12px] uppercase tracking-[0.25em]"><span className="mr-2 text-primary">▍</span>Research mode</h1>
-        {canRun && <button disabled={running} onClick={run} className="border border-primary bg-primary/10 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-background disabled:opacity-40">{running ? "Running evaluation (~25 s)…" : r ? "Re-run evaluation" : "Run evaluation"}</button>}
-        {r && <span className="text-[10px] tracking-widest text-muted">{r.trials} TRIALS · SEED {r.seed}</span>}
+        {canRun && <button disabled={running} onClick={run} className="border border-primary bg-primary/10 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-primary hover:bg-primary hover:text-background disabled:opacity-40">{running ? "Running evaluation (~25 s)…" : r ? "Re-run evaluation" : "Run evaluation"}</button>}
+        {r && <span className="text-[11px] tracking-widest text-muted">{r.trials} TRIALS · SEED {r.seed}</span>}
       </div>
       <p className="border border-warning/30 bg-warning/5 px-3 py-2 text-[11px] leading-relaxed text-warning">
         Synthetic benchmark. The data, attacks and detector thresholds were written by the same author, so these results demonstrate the methodology and the rule/ML trade-off on controlled cases.
@@ -68,12 +68,12 @@ export default function ResearchPage() {
           <div className="grid gap-3 xl:grid-cols-[1.3fr_1fr]">
             <CyberCard title="Rule vs ML vs hybrid" tone="primary" bodyClassName="p-0">
               <div className="overflow-x-auto"><table className="w-full text-[11px]">
-                <thead><tr className="border-b border-border text-[9px] uppercase tracking-widest text-muted"><th className="px-3 py-2 text-left">Method</th><th>Precision</th><th>Recall</th><th>F1</th><th>FPR</th><th>Latency (median)</th></tr></thead>
+                <thead><tr className="border-b border-border text-[11px] uppercase tracking-widest text-muted"><th className="px-3 py-2 text-left">Method</th><th>Precision</th><th>Recall</th><th>F1</th><th>FPR</th><th>Latency (median)</th></tr></thead>
                 <tbody>{METHODS.map((m) => { const v = r.methods[m]; return (
                   <tr key={m} className="border-b border-border/60 text-center tabular-nums"><td className="px-3 py-2.5 text-left" style={{ color: COLOR[m] }}>{LABEL[m]}</td><td>{pct(v.precision)}</td><td>{pct(v.recall)}</td><td>{pct(v.f1)}</td><td>{pct(v.fpr)}</td>
                     <td>{v.latency_median_s === null ? "n/a" : `${v.latency_median_s.toFixed(0)} s`}{v.latency_missed > 0 && <span className="text-warning"> ({v.latency_missed} missed)</span>}</td></tr>); })}</tbody>
               </table></div>
-              <p className="px-3 py-2 text-[10px] text-muted">{r.latency_note} Unit: {r.dataset.unit}; {r.dataset.attack_windows} attack and {r.dataset.benign_windows} benign windows.</p>
+              <p className="px-3 py-2 text-[11px] text-muted">{r.latency_note} Unit: {r.dataset.unit}; {r.dataset.attack_windows} attack and {r.dataset.benign_windows} benign windows.</p>
             </CyberCard>
             <CyberCard title="Metrics (%)" tone="muted">
               <div className="h-52" role="img" aria-label="Precision, recall and F1 by method">
@@ -96,18 +96,18 @@ export default function ResearchPage() {
 
           <CyberCard title="Recall by attack and intensity" tone="muted" bodyClassName="p-0">
             <div className="overflow-x-auto"><table className="w-full text-[11px]">
-              <thead><tr className="border-b border-border text-[9px] uppercase tracking-widest text-muted"><th className="px-3 py-2 text-left">Attack</th>{(["strong", "subtle"] as const).flatMap((i) => METHODS.map((m) => <th key={i + m} className="px-2">{i} · {m}</th>))}</tr></thead>
+              <thead><tr className="border-b border-border text-[11px] uppercase tracking-widest text-muted"><th className="px-3 py-2 text-left">Attack</th>{(["strong", "subtle"] as const).flatMap((i) => METHODS.map((m) => <th key={i + m} className="px-2">{i} · {m}</th>))}</tr></thead>
               <tbody>{Object.entries(r.recall_by_attack).map(([a, v]) => (
                 <tr key={a} className="border-b border-border/60 text-center tabular-nums"><td className="px-3 py-2 text-left">{a.replaceAll("_", " ")}</td>
                   {(["strong", "subtle"] as const).flatMap((i) => METHODS.map((m) => { const x = v[i][m]; return <td key={i + m} className={cn(x >= 0.99 ? "bg-success/15 text-success" : x > 0 ? "bg-warning/10 text-warning" : "text-muted/60")}>{Math.round(x * 100)}%</td>; }))}</tr>))}</tbody>
             </table></div>
-            <p className="px-3 py-2 text-[10px] text-muted">Strong = {r.dataset.intensities.strong}. Subtle = {r.dataset.intensities.subtle}. Subtle cases were built to fall below rule thresholds, which favours non-threshold methods.</p>
+            <p className="px-3 py-2 text-[11px] text-muted">Strong = {r.dataset.intensities.strong}. Subtle = {r.dataset.intensities.subtle}. Subtle cases were built to fall below rule thresholds, which favours non-threshold methods.</p>
           </CyberCard>
 
           <div className="grid gap-3 md:grid-cols-2">
             <CyberCard title="Model and features" tone="info">
               <p className="text-[11px]">{r.model.algorithm} · {r.model.training_windows} training windows · {r.model.trained_on}</p>
-              <p className="mt-2 text-[10px] leading-relaxed text-muted">{r.model.features.join(" · ")}</p>
+              <p className="mt-2 text-[11px] leading-relaxed text-muted">{r.model.features.join(" · ")}</p>
             </CyberCard>
             <CyberCard title="Caveats" tone="warning"><ul className="list-disc space-y-1 pl-4 text-[11px] text-muted">{r.caveats.map((c) => <li key={c}>{c}</li>)}</ul></CyberCard>
           </div>

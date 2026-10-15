@@ -34,18 +34,18 @@ export function AttackChain({ steps, selected, onSelect }: Props) {
               transition={{ duration: 0.35, delay: i * 0.22 }}
               className={cn("group grid w-full grid-cols-[2rem_1fr] gap-3 border border-transparent px-1 py-2 text-left transition", active ? "border-primary/40 bg-primary/5" : "hover:bg-panel-2")}
             >
-              <span className="relative mt-0.5 grid size-7 place-items-center border bg-background text-[10px] font-bold tabular-nums" style={{ borderColor: col, color: col, boxShadow: `0 0 10px -2px ${col}` }}>
+              <span className="relative mt-0.5 grid size-7 place-items-center border bg-background text-[11px] font-bold tabular-nums" style={{ borderColor: col, color: col, boxShadow: `0 0 10px -2px ${col}` }}>
                 {i + 1}
                 {active && <span className="absolute inset-0 animate-pulse-ring border" style={{ borderColor: col }} />}
               </span>
               <span className="min-w-0">
                 <span className="flex flex-wrap items-baseline gap-x-3">
                   <span className="font-display text-[12px] font-bold uppercase tracking-wider">{s.stage}</span>
-                  <span className="text-[10px] tabular-nums text-muted">{formatClock(s.timestamp)}</span>
-                  {s.mitre.slice(0, 3).map((t) => <span key={t} className="text-[10px] tracking-widest text-info">{t}</span>)}
+                  <span className="text-[11px] tabular-nums text-muted">{formatClock(s.timestamp)}</span>
+                  {s.mitre.slice(0, 3).map((t) => <span key={t} className="text-[11px] tracking-widest text-info">{t}</span>)}
                 </span>
                 <span className="mt-0.5 block truncate text-[11px] text-muted">{s.explanation}</span>
-                {i > 0 && <span className="mt-0.5 block text-[9px] uppercase tracking-widest text-muted/70">↳ {s.link_reason} · link {Math.round(s.link_confidence * 100)}%</span>}
+                {i > 0 && <span className="mt-0.5 block text-[11px] uppercase tracking-widest text-muted/70">↳ {s.link_reason} · link {Math.round(s.link_confidence * 100)}%</span>}
               </span>
             </motion.button>
           </li>

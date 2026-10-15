@@ -74,13 +74,13 @@ export default function NetworkPage() {
         <div className="flex flex-wrap gap-1" role="group" aria-label="Filter by type">
           {TYPES.map((t) => (
             <button key={t} onClick={() => setType(t)} aria-pressed={type === t}
-              className={cn("border px-2 py-0.5 text-[9px] uppercase tracking-widest", type === t ? "border-primary bg-primary/10 text-primary" : "border-border text-muted hover:text-foreground")}>{t}</button>
+              className={cn("border px-2 py-0.5 text-[11px] uppercase tracking-widest", type === t ? "border-primary bg-primary/10 text-primary" : "border-border text-muted hover:text-foreground")}>{t}</button>
           ))}
         </div>
-        <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-muted">
+        <label className="flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-muted">
           <input type="checkbox" checked={onlyRisky} onChange={(e) => setOnlyRisky(e.target.checked)} className="accent-primary" /> off-baseline only
         </label>
-        <span className="ml-auto text-[10px] tracking-widest text-muted">{topo ? `${visible}/${topo.nodes.length} NODES` : ""}</span>
+        <span className="ml-auto text-[11px] tracking-widest text-muted">{topo ? `${visible}/${topo.nodes.length} NODES` : ""}</span>
       </div>
 
       <div className="flex min-h-0 flex-1">
@@ -101,7 +101,7 @@ export default function NetworkPage() {
                 nodeColor={(n) => SEVERITY[severityForRisk((n.data as { device: { risk_score: number } }).device.risk_score)].hex} />
             </ReactFlow>
           )}
-          <div className="pointer-events-none absolute bottom-3 left-14 border border-border bg-background/80 px-2 py-1 text-[9px] uppercase tracking-widest text-muted">
+          <div className="pointer-events-none absolute bottom-3 left-14 border border-border bg-background/80 px-2 py-1 text-[11px] uppercase tracking-widest text-muted">
             <span className="text-danger">━</span> suspicious &nbsp;<span className="text-primary">━</span> selected &nbsp;line width = traffic/h &nbsp;dash = active
           </div>
         </div>

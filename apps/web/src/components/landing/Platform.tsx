@@ -52,7 +52,7 @@ export function Platform() {
 
       <section id="github" className="mx-auto max-w-6xl px-5 pb-24 pt-10">
         <Reveal className="panel-edge relative border border-primary/30 p-8 text-center sm:p-12">
-          <div className="text-[10px] uppercase tracking-[0.3em] text-muted">11 / Open source</div>
+          <div className="text-[11px] uppercase tracking-[0.3em] text-muted">11 / Open source</div>
           <h2 className="mt-3 font-display text-2xl font-bold tracking-wide sm:text-3xl">Read the code. Run the demo.</h2>
           <p className="mx-auto mt-3 max-w-xl text-[12px] text-muted">An MCA research project. Limitations are documented, not hidden.</p>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
@@ -62,8 +62,26 @@ export function Platform() {
         </Reveal>
       </section>
 
-      <footer className="border-t border-border py-6 text-center text-[10px] uppercase tracking-[0.25em] text-muted">
-        NetSentinel &middot; experimental research platform &middot; synthetic data unless a real source is attached
+      <footer className="border-t border-border">
+        <div className="mx-auto grid max-w-6xl gap-6 px-5 py-8 text-[12px] sm:grid-cols-[1.4fr_1fr_1fr]">
+          <div>
+            <div className="font-display text-sm font-bold tracking-[0.25em]">NET<span className="text-primary">SENTINEL</span></div>
+            <p className="mt-2 max-w-sm leading-relaxed text-muted">An experimental research platform for explainable network threat detection. It complements mature engines such as Zeek and Suricata; it does not replace them.</p>
+          </div>
+          <nav aria-label="Product" className="space-y-1.5">
+            <div className="text-[11px] uppercase tracking-[0.25em] text-muted">Explore</div>
+            <Link href="/try" className="block hover:text-primary">Detection playground</Link>
+            <Link href="/login" className="block hover:text-primary">Sign in</Link>
+            <a href="#architecture" className="block hover:text-primary">Architecture</a>
+          </nav>
+          <nav aria-label="Project" className="space-y-1.5">
+            <div className="text-[11px] uppercase tracking-[0.25em] text-muted">Project</div>
+            <a href="https://github.com/Kaushik2210/Net-Sentinel" className="block hover:text-primary">Source on GitHub</a>
+            <a href="https://github.com/Kaushik2210/Net-Sentinel/blob/main/LICENSE" className="block hover:text-primary">MIT license</a>
+            <a href="https://github.com/Kaushik2210/Net-Sentinel/blob/main/docs/SECURITY.md" className="block hover:text-primary">Security notes</a>
+          </nav>
+        </div>
+        <p className="border-t border-border py-4 text-center text-[11px] uppercase tracking-[0.2em] text-muted">Synthetic data unless a real source is attached &middot; Simulation is always labelled</p>
       </footer>
     </>
   );

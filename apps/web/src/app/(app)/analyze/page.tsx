@@ -65,7 +65,7 @@ export default function AnalyzePage() {
                   <button onClick={() => run("built-in sample", api.replaySample)} className="border border-border px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-muted hover:border-primary hover:text-primary">Try the built-in sample</button>
                 </div>
               )}
-              <p className="mt-4 text-[10px] text-muted">PCAP or pcapng, or Zeek conn.log / dns.log · up to 25 MB · IPv4 · parsed on the server, never executed</p>
+              <p className="mt-4 text-[11px] text-muted">PCAP or pcapng, or Zeek conn.log / dns.log · up to 25 MB · IPv4 · parsed on the server, never executed</p>
             </div>
           )}
         </div>
@@ -74,8 +74,8 @@ export default function AnalyzePage() {
       {state === "done" && result && (
         <Results name={name} result={result}
           actions={<>
-            <Link href="/replay" className="border border-border px-3 py-2 text-[10px] uppercase tracking-widest text-muted hover:border-primary hover:text-primary">Replay</Link>
-            <button onClick={() => { setState("idle"); setResult(null); setSessionId(null); }} className="border border-primary px-3 py-2 text-[10px] uppercase tracking-widest text-primary hover:bg-primary hover:text-background">Analyze another</button>
+            <Link href="/replay" className="border border-border px-3 py-2 text-[11px] uppercase tracking-widest text-muted hover:border-primary hover:text-primary">Replay</Link>
+            <button onClick={() => { setState("idle"); setResult(null); setSessionId(null); }} className="border border-primary px-3 py-2 text-[11px] uppercase tracking-widest text-primary hover:bg-primary hover:text-background">Analyze another</button>
           </>}
           footer={<>Session {sessionId} is saved and can be replayed on the Replay page. {result.ingest?.heuristics}
             {Object.keys(result.settings.overrides).length > 0 && ` Threshold overrides in effect: ${JSON.stringify(result.settings.overrides)}.`}</>} />

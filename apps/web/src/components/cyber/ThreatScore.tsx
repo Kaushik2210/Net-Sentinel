@@ -20,7 +20,7 @@ export function ThreatScore({ score, size = 84, label = "RISK" }: { score: numbe
       </svg>
       <div className="absolute text-center">
         <div className="font-display text-xl font-bold tabular-nums" style={{ color }}>{score}</div>
-        <div className="text-[8px] tracking-[0.25em] text-muted">{label}</div>
+        <div className="text-[11px] tracking-[0.25em] text-muted">{label}</div>
       </div>
     </div>
   );

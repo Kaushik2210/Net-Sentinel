@@ -20,16 +20,16 @@ function Threat({ a, index }: { a: ReplayAlert; index: number }) {
       <button onClick={() => setOpen(!open)} aria-expanded={open} className="grid w-full grid-cols-[auto_1fr_auto] items-center gap-3 px-3 py-2.5 text-left hover:bg-panel-2">
         <ThreatBadge severity={a.severity} />
         <span className="min-w-0"><span className="block truncate text-[12px]">{a.event_type.replaceAll("_", " ")}</span>
-          <span className="block truncate text-[10px] text-muted">{a.source} <span className="text-primary">›</span> {a.destination}</span></span>
-        <span className="text-right text-[10px] tabular-nums text-muted">T+{clock(a.detected_offset_s)}<br />{Math.round(a.confidence * 100)}% conf</span>
+          <span className="block truncate text-[11px] text-muted">{a.source} <span className="text-primary">›</span> {a.destination}</span></span>
+        <span className="text-right text-[11px] tabular-nums text-muted">T+{clock(a.detected_offset_s)}<br />{Math.round(a.confidence * 100)}% conf</span>
       </button>
       {open && (
         <div className="space-y-2 bg-black/30 px-3 pb-3 pt-1 text-[11px]">
           <p>{a.explanation}</p>
           <div className="flex flex-wrap items-center gap-1.5"><DetectionClassBadge kind={a.detection_class} /><span className="text-muted">via {a.detector}</span>
-            {a.mitre.map((t) => <span key={t} className="border border-info/50 bg-info/10 px-1 text-[10px] text-info">{t}</span>)}</div>
-          <dl className="grid grid-cols-[auto_1fr] gap-x-3 text-[10px]">{Object.entries(a.facts).map(([k, v]) => <div key={k} className="contents"><dt className="text-muted">{k.replaceAll("_", " ")}</dt><dd>{Array.isArray(v) ? v.join(", ") : String(v)}</dd></div>)}</dl>
-          <p className="break-all text-[10px] text-muted">Evidence ({a.evidence_event_ids.length}): {a.evidence_event_ids.slice(0, 6).join(", ")}{a.evidence_event_ids.length > 6 ? " …" : ""}</p>
+            {a.mitre.map((t) => <span key={t} className="border border-info/50 bg-info/10 px-1 text-[11px] text-info">{t}</span>)}</div>
+          <dl className="grid grid-cols-[auto_1fr] gap-x-3 text-[11px]">{Object.entries(a.facts).map(([k, v]) => <div key={k} className="contents"><dt className="text-muted">{k.replaceAll("_", " ")}</dt><dd>{Array.isArray(v) ? v.join(", ") : String(v)}</dd></div>)}</dl>
+          <p className="break-all text-[11px] text-muted">Evidence ({a.evidence_event_ids.length}): {a.evidence_event_ids.slice(0, 6).join(", ")}{a.evidence_event_ids.length > 6 ? " …" : ""}</p>
         </div>
       )}
     </motion.li>
@@ -67,7 +67,7 @@ export function Results({ name, result, actions, footer, emptyText = "The captur
           </div>
           {bad && v.top && <ThreatBadge severity={v.top} className="text-xs" />}
           <div className="flex flex-wrap gap-2">
-            <button onClick={() => download(`netsentinel-${name.replace(/\W+/g, "_")}.md`, toMarkdown(name, result))} className="inline-flex items-center gap-1.5 border border-border px-3 py-2 text-[10px] uppercase tracking-widest text-muted hover:border-primary hover:text-primary"><Download className="size-3.5" /> Report</button>
+            <button onClick={() => download(`netsentinel-${name.replace(/\W+/g, "_")}.md`, toMarkdown(name, result))} className="inline-flex items-center gap-1.5 border border-border px-3 py-2 text-[11px] uppercase tracking-widest text-muted hover:border-primary hover:text-primary"><Download className="size-3.5" /> Report</button>
             {actions}
           </div>
         </div>
@@ -87,19 +87,19 @@ export function Results({ name, result, actions, footer, emptyText = "The captur
                     const a = result.alerts.find((x) => x.id === s.alert_id);
                     return <motion.li key={s.alert_id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 + s.position * 0.35 }}
                       className="grid grid-cols-[1.4rem_1fr_auto] items-center gap-2 border-l-2 pl-2 text-[11px]" style={{ borderColor: a ? SEVERITY[a.severity].hex : undefined }}><span className="text-muted tabular-nums">{s.position + 1}</span><span>{s.stage}</span>
-                      <span className="text-[10px] tabular-nums" style={{ color: a ? SEVERITY[a.severity].hex : undefined }}>T+{clock(s.offset_s)}</span></motion.li>;
+                      <span className="text-[11px] tabular-nums" style={{ color: a ? SEVERITY[a.severity].hex : undefined }}>T+{clock(s.offset_s)}</span></motion.li>;
                   })}</ol>
                 </CyberCard>
                 <CyberCard title="Why this risk score" tone="warning"><RiskFactors factors={result.incident.risk_factors} total={result.incident.risk_score} /></CyberCard>
                 <CyberCard title={`MITRE ATT&CK · ${result.incident.techniques.length}`} tone="info">
-                  <ul className="space-y-1 text-[11px]">{result.incident.techniques.map((t) => <li key={t.id}><span className="mr-2 border border-info/50 bg-info/10 px-1 text-[10px] text-info">{t.id}</span>{t.name} <span className="text-muted">· {t.tactic}</span></li>)}</ul>
+                  <ul className="space-y-1 text-[11px]">{result.incident.techniques.map((t) => <li key={t.id}><span className="mr-2 border border-info/50 bg-info/10 px-1 text-[11px] text-info">{t.id}</span>{t.name} <span className="text-muted">· {t.tactic}</span></li>)}</ul>
                 </CyberCard>
               </>
             )}
           </div>
         </div>
       )}
-      {footer && <p className="text-[10px] leading-relaxed text-muted">{footer}</p>}
+      {footer && <p className="text-[11px] leading-relaxed text-muted">{footer}</p>}
     </>
   );
 }

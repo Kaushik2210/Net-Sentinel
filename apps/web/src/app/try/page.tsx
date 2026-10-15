@@ -15,7 +15,7 @@ import { api } from "@/lib/api";
 import type { PlaygroundOptions, ReplayResult } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-const btn = "border px-3 py-2 text-[10px] uppercase tracking-[0.2em] transition disabled:opacity-30";
+const btn = "border px-3 py-2 text-[11px] uppercase tracking-[0.2em] transition disabled:opacity-30";
 
 /** Public, no-login playground: pick a generated scenario, tune detector thresholds, compare runs, watch it replay and try the tuning challenge. */
 export default function TryPage() {
@@ -82,7 +82,7 @@ export default function TryPage() {
   }
 
   return (
-    <main className="bg-grid bg-vignette relative min-h-screen">
+    <main id="main" className="bg-grid bg-vignette relative min-h-screen">
       <PacketRain className="fixed [mask-image:linear-gradient(to_bottom,black,transparent_70%)]" intensity={0.3} />
       <header className="relative mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
         <Logo />
@@ -111,16 +111,16 @@ export default function TryPage() {
                   <button key={s.id} role="radio" aria-checked={scenario === s.id} onClick={() => setScenario(s.id)}
                     className={cn("block w-full border px-3 py-2 text-left transition", scenario === s.id ? "border-primary bg-primary/10" : "border-border hover:border-primary/50")}>
                     <span className={cn("block text-[12px]", scenario === s.id && "text-primary")}>{s.label}</span>
-                    <span className="block text-[10px] text-muted">{s.blurb}</span>
+                    <span className="block text-[11px] text-muted">{s.blurb}</span>
                   </button>
                 ))}
               </div>
             </CyberCard>
 
             <CyberCard title="2 · Detector sensitivity" tone="info">
-              <p className="mb-3 text-[10px] text-muted">Lower thresholds catch more but raise false alarms; higher ones stay quiet but can miss real activity.</p>
+              <p className="mb-3 text-[11px] text-muted">Lower thresholds catch more but raise false alarms; higher ones stay quiet but can miss real activity.</p>
               <div className="mb-4 flex flex-wrap items-center gap-2" role="group" aria-label="Presets">
-                <span className="text-[9px] uppercase tracking-[0.2em] text-muted">Presets</span>
+                <span className="text-[11px] uppercase tracking-[0.2em] text-muted">Presets</span>
                 <button onClick={() => setValues(scaled(opts, 0.5))} className={cn(btn, "border-warning/50 text-warning hover:bg-warning/10")}>Sensitive</button>
                 <button onClick={() => setValues({})} className={cn(btn, "border-border text-muted hover:border-primary hover:text-primary")}>Default</button>
                 <button onClick={() => setValues(scaled(opts, 2))} className={cn(btn, "border-info/50 text-info hover:bg-info/10")}>Strict</button>
@@ -157,7 +157,7 @@ export default function TryPage() {
         {result && ran && now && (
           <div className="space-y-3 pt-1">
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-muted">Result · {nameOf(ran.scenario)} · {ran.custom ? "custom thresholds" : "default thresholds"}</p>
+              <p className="text-[11px] uppercase tracking-[0.2em] text-muted">Result · {nameOf(ran.scenario)} · {ran.custom ? "custom thresholds" : "default thresholds"}</p>
               <button onClick={() => setPinned(now)} className={cn(btn, "inline-flex items-center gap-1.5 border-warning/50 text-warning hover:bg-warning/10")}><Pin className="size-3.5" /> Pin this run to compare</button>
               {!result.empty && <button onClick={() => setWatch((w) => !w)} className={cn(btn, "border-primary/60 text-primary hover:bg-primary hover:text-background")}>{watch ? "Hide replay" : "Watch it unfold"}</button>}
             </div>
@@ -174,15 +174,15 @@ export default function TryPage() {
               {opts.detectors.map((d) => (
                 <li key={d.name} className="text-[11px]">
                   <span className="text-foreground">{d.name.replace("Detector", "")}</span>
-                  {d.mitre.map((m) => <span key={m} className="ml-1.5 border border-info/50 bg-info/10 px-1 text-[9px] text-info">{m}</span>)}
-                  <span className="block text-[10px] text-muted">{d.about}</span>
+                  {d.mitre.map((m) => <span key={m} className="ml-1.5 border border-info/50 bg-info/10 px-1 text-[11px] text-info">{m}</span>)}
+                  <span className="block text-[11px] text-muted">{d.about}</span>
                 </li>
               ))}
             </ul>
           </CyberCard>
         )}
 
-        <p className="text-[10px] leading-relaxed text-muted">
+        <p className="text-[11px] leading-relaxed text-muted">
           Want to analyze your own capture? Run NetSentinel locally and use the Analyze page. Uploads are limited to signed-in analysts, so the public site never parses files from strangers.
         </p>
       </div>

@@ -22,7 +22,7 @@ export type Status = "LIVE" | "IN PROGRESS" | "PLANNED";
 /** Honest capability status. The landing page never implies a feature exists before it does. */
 export function StatusTag({ status }: { status: Status }) {
   const tone = status === "LIVE" ? "text-success border-success/40" : status === "IN PROGRESS" ? "text-warning border-warning/40" : "text-muted border-border";
-  return <span className={cn("border px-1.5 py-0.5 text-[9px] tracking-[0.2em]", tone)}>{status}</span>;
+  return <span className={cn("border px-1.5 py-0.5 text-[11px] tracking-[0.2em]", tone)}>{status}</span>;
 }
 
 interface SectionProps {
@@ -39,7 +39,7 @@ export function Section({ id, index, eyebrow, title, lead, status, children }: S
   return (
     <section id={id} className="relative mx-auto max-w-6xl scroll-mt-20 px-5 py-20">
       <Reveal>
-        <div className="mb-8 flex flex-wrap items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-muted">
+        <div className="mb-8 flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-muted">
           <span className="text-primary">{index}</span>
           <span>/</span>
           <span>{eyebrow}</span>

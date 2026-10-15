@@ -17,7 +17,7 @@ export function EventStream({ events, status, loaded, error, source }: Props) {
   const tone = status === "live" ? "success" : status === "connecting" ? "warning" : "danger";
   return (
     <CyberCard title="Live event stream" tone="success" className="h-full" bodyClassName="p-0"
-      actions={<span className="flex items-center gap-2 text-[9px] tracking-[0.2em] text-muted"><StatusDot tone={tone} pulse={status === "live"} />{status.toUpperCase()}{source ? ` · ${source.toUpperCase()}` : ""}</span>}>
+      actions={<span className="flex items-center gap-2 text-[11px] tracking-[0.2em] text-muted"><StatusDot tone={tone} pulse={status === "live"} />{status.toUpperCase()}{source ? ` · ${source.toUpperCase()}` : ""}</span>}>
       <div className="max-h-[340px] overflow-y-auto font-mono text-[11px]" role="log" aria-live="off">
         {error ? <p className="p-4 text-danger">{error}</p>
           : !loaded ? <p className="p-4 text-muted">Opening stream…</p>

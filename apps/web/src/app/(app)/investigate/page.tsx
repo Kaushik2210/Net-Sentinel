@@ -45,7 +45,7 @@ export default function InvestigatePage() {
                 className={cn("w-full border-b border-border/60 px-3 py-2.5 text-left hover:bg-panel-2", i.id === activeId && "bg-primary/5")}>
                 <div className="flex items-center justify-between"><ThreatBadge severity={i.severity} /><span className="font-display text-sm font-bold tabular-nums">{i.risk_score}</span></div>
                 <div className="mt-1.5 text-[12px] leading-snug">{i.title}</div>
-                <div className="mt-1 text-[10px] text-muted">{i.status.replace("_", " ")} · {i.assignee ?? "unassigned"} · {timeAgo(i.last_seen)}</div>
+                <div className="mt-1 text-[11px] text-muted">{i.status.replace("_", " ")} · {i.assignee ?? "unassigned"} · {timeAgo(i.last_seen)}</div>
               </button></li>))}</ul>
           )}
         </CyberCard>
@@ -60,7 +60,7 @@ export default function InvestigatePage() {
         </div>
 
         <CyberCard tone="info" bodyClassName="p-0" className="xl:self-start">
-          <div role="tablist" className="flex border-b border-border text-[10px] uppercase tracking-[0.2em]">
+          <div role="tablist" className="flex border-b border-border text-[11px] uppercase tracking-[0.2em]">
             {(["evidence", "analyst", "response"] as const).map((t) => (
               <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={cn("flex-1 px-3 py-2.5", tab === t ? "border-b-2 border-info text-info" : "text-muted hover:text-foreground")}>{t === "evidence" ? "Evidence" : t === "analyst" ? "AI analyst" : "Response"}</button>
             ))}

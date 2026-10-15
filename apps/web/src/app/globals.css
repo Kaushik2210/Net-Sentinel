@@ -18,7 +18,7 @@
   --color-border: #1b2a38;
   --color-border-strong: #2a4256;
   --color-foreground: #cfe3ea;
-  --color-muted: #6b8594;
+  --color-muted: #8aa4b3;
   --color-primary: #00e5ff;
   --color-success: #39ff88;
   --color-warning: #ffb000;
@@ -162,4 +162,37 @@ html[data-alert="true"] body { animation: alarm-flash 2.4s ease-in-out infinite;
 }
 @media (prefers-reduced-motion: reduce) {
   .glitch:hover, .slam, .alarm, html[data-alert="true"] body { animation: none; }
+}
+
+/* ---- Accessibility baselines ---------------------------------------------- */
+
+/* One consistent, visible focus ring for keyboard users on every interactive element. */
+:where(a, button, input, select, textarea, summary, [role="button"], [role="radio"], [role="option"], [tabindex]):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+input[type="range"]:focus-visible { outline-offset: 4px; }
+
+.skip-link {
+  position: fixed; top: 8px; left: 8px; z-index: 100; padding: 10px 14px; font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase;
+  background: var(--color-primary); color: var(--color-background); transform: translateY(-200%);
+}
+.skip-link:focus { transform: none; }
+
+/* Touch devices: comfortable 44px targets for buttons, links styled as buttons and sliders. */
+@media (pointer: coarse) {
+  button, [role="button"], [role="radio"], select, input[type="range"], a.btn-target { min-height: 44px; }
+  input[type="range"] { padding-block: 10px; }
+}
+
+/* Honour the OS-level motion setting everywhere, not only on the effects that opt in. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  .cursor-glow { display: none; }
+}
+
+/* Increased contrast: drop the decorative scanlines and grain, and strengthen borders. */
+@media (prefers-contrast: more) {
+  .crt-overlay, .crt-grain, .cursor-glow { display: none; }
+  :root { --color-border: #44627a; --color-border-strong: #6f93ad; --color-muted: #b3c6d1; }
 }

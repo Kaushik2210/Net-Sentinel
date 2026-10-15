@@ -1,7 +1,7 @@
 import { DETECTION_CLASS, SEVERITY, type Severity } from "@/lib/severity";
 import { cn } from "@/lib/utils";
 
-const base = "inline-flex items-center gap-1.5 border px-1.5 py-0.5 text-[10px] font-medium uppercase leading-none tracking-widest";
+const base = "inline-flex items-center gap-1.5 border px-1.5 py-0.5 text-[11px] font-medium uppercase leading-none tracking-widest";
 
 export function ThreatBadge({ severity, className }: { severity: Severity; className?: string }) {
   const s = SEVERITY[severity];

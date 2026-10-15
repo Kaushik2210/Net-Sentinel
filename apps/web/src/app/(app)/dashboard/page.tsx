@@ -24,7 +24,7 @@ export default function Dashboard() {
         <div role="alert" className="border border-danger/40 bg-danger/10 px-3 py-2 text-[12px] text-danger">{summaryError}</div>
       )}
       {summary?.mode === "SIMULATION" && (
-        <div className="flex items-center gap-2 border border-warning/30 bg-warning/5 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-warning">
+        <div className="flex items-center gap-2 border border-warning/30 bg-warning/5 px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-warning">
           <span className="size-1.5 animate-blink bg-warning" /> Simulation mode: all telemetry is synthetic
         </div>
       )}

@@ -15,7 +15,7 @@ const TEXT = { primary: "text-primary glow-primary", success: "text-success glow
 export function MetricCard({ label, value, hint, tone = "primary", visual }: Props) {
   return (
     <CyberCard tone={tone === "muted" ? "muted" : tone} bodyClassName="p-3">
-      <div className="text-[10px] uppercase tracking-[0.2em] text-muted">{label}</div>
+      <div className="text-[11px] uppercase tracking-[0.2em] text-muted">{label}</div>
       <div className={cn("mt-1 font-display text-3xl font-bold tabular-nums", TEXT[tone])}>{value}</div>
       {hint && <div className="mt-0.5 text-[11px] text-muted">{hint}</div>}
       {visual && <div className="mt-2">{visual}</div>}

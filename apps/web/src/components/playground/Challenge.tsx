@@ -28,7 +28,7 @@ export function Challenge({ thresholds }: { thresholds: Thresholds }) {
   const caught = res?.stages.filter((s) => s.caught).length ?? 0;
   return (
     <CyberCard title="Tuning challenge" tone={res?.perfect ? "success" : "warning"}>
-      <p className="mb-3 text-[10px] leading-relaxed text-muted">
+      <p className="mb-3 text-[11px] leading-relaxed text-muted">
         One attacker (10.0.20.22) is hiding among two innocent hosts: an inventory scanner and a backup job. Move the sliders so every attack stage is caught
         and nobody innocent is flagged. Each false alarm costs 20 points.
       </p>
@@ -37,8 +37,8 @@ export function Challenge({ thresholds }: { thresholds: Thresholds }) {
         <div className="grid gap-4 sm:grid-cols-[auto_1fr]">
           <div className="text-center">
             <div className={cn("font-display text-5xl font-black tabular-nums", res.perfect ? "text-success glow-success" : res.score >= 60 ? "text-warning" : "text-danger")}>{res.score}</div>
-            <div className="text-[9px] uppercase tracking-[0.25em] text-muted">score / 100</div>
-            {res.perfect && <div className="mt-2 text-[10px] uppercase tracking-[0.2em] text-success">Perfect tuning</div>}
+            <div className="text-[11px] uppercase tracking-[0.25em] text-muted">score / 100</div>
+            {res.perfect && <div className="mt-2 text-[11px] uppercase tracking-[0.2em] text-success">Perfect tuning</div>}
           </div>
           <div className="space-y-3">
             <ul className="grid gap-1 sm:grid-cols-2">
@@ -49,12 +49,12 @@ export function Challenge({ thresholds }: { thresholds: Thresholds }) {
                 </li>
               ))}
             </ul>
-            <p className="text-[10px] text-muted">Caught {caught} of {res.stages.length} attack stages.</p>
+            <p className="text-[11px] text-muted">Caught {caught} of {res.stages.length} attack stages.</p>
             <div className="text-[11px]">
               {res.false_alarms.length === 0
                 ? <span className="text-success">No innocent hosts flagged.</span>
                 : <><span className="text-danger">{res.false_alarms.length} false alarm{res.false_alarms.length > 1 ? "s" : ""}:</span>
-                  <ul className="mt-1 space-y-0.5 text-[10px] text-muted">{res.false_alarms.map((f, i) => <li key={i}>{f.source} flagged as {f.event_type.replaceAll("_", " ")} ({f.detector.replace("Detector", "")})</li>)}</ul></>}
+                  <ul className="mt-1 space-y-0.5 text-[11px] text-muted">{res.false_alarms.map((f, i) => <li key={i}>{f.source} flagged as {f.event_type.replaceAll("_", " ")} ({f.detector.replace("Detector", "")})</li>)}</ul></>}
             </div>
           </div>
         </div>

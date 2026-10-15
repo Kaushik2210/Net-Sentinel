@@ -10,7 +10,7 @@ export function TerminalPanel({ prompt, title, className, children, ...rest }: P
   return (
     <div className={cn("border border-border bg-black/60 font-mono", className)} {...rest}>
       {title && (
-        <div className="flex items-center gap-2 border-b border-border px-3 py-1.5 text-[10px] uppercase tracking-widest text-muted">
+        <div className="flex items-center gap-2 border-b border-border px-3 py-1.5 text-[11px] uppercase tracking-widest text-muted">
           <span className="size-1.5 rounded-full bg-danger/70" />
           <span className="size-1.5 rounded-full bg-warning/70" />
           <span className="size-1.5 rounded-full bg-success/70" />

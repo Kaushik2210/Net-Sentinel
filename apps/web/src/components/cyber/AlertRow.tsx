@@ -27,9 +27,9 @@ export function AlertRow({ alert }: { alert: Alert }) {
         <ThreatBadge severity={alert.severity} />
         <span className="min-w-0">
           <span className="block truncate text-[12px]">{alert.event_type.replaceAll("_", " ")}</span>
-          <span className="block truncate text-[10px] text-muted">{alert.source} <span className="text-primary">›</span> {alert.destination}</span>
+          <span className="block truncate text-[11px] text-muted">{alert.source} <span className="text-primary">›</span> {alert.destination}</span>
         </span>
-        <span className="text-right text-[10px] tabular-nums text-muted">
+        <span className="text-right text-[11px] tabular-nums text-muted">
           <span className="block">{formatClock(alert.ts)}</span>
           <span className="block">{Math.round(alert.confidence * 100)}% conf</span>
         </span>
@@ -39,15 +39,15 @@ export function AlertRow({ alert }: { alert: Alert }) {
           <div className="flex flex-wrap items-center gap-1.5">
             <DetectionClassBadge kind={alert.detection_class} />
             <span className="text-muted">via {alert.detector}</span>
-            {alert.mitre_techniques.map((t) => <span key={t} className="border border-info/50 bg-info/10 px-1 text-[10px] text-info">{t}</span>)}
+            {alert.mitre_techniques.map((t) => <span key={t} className="border border-info/50 bg-info/10 px-1 text-[11px] text-info">{t}</span>)}
           </div>
           <p className="text-foreground">{alert.explanation}</p>
           {err ? <p className="text-danger">{err}</p> : !detail ? <p className="text-muted">Loading evidence…</p> : (
             <>
-              <dl className="grid grid-cols-[auto_1fr] gap-x-3 text-[10px]">
+              <dl className="grid grid-cols-[auto_1fr] gap-x-3 text-[11px]">
                 {Object.entries(facts).map(([k, v]) => (<div key={k} className="contents"><dt className="text-muted">{k}</dt><dd>{Array.isArray(v) ? v.join(", ") : String(v)}</dd></div>))}
               </dl>
-              <p className={cn("break-all text-[10px] text-muted")}>Evidence: {eventIds.length ? eventIds.join(", ") : "none linked"}</p>
+              <p className={cn("break-all text-[11px] text-muted")}>Evidence: {eventIds.length ? eventIds.join(", ") : "none linked"}</p>
             </>
           )}
         </div>

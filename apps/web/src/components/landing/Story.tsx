@@ -32,7 +32,7 @@ export function Story() {
         <ol className="grid gap-px border border-border bg-border sm:grid-cols-2 lg:grid-cols-6">
           {PIPELINE.map(([t, d], i) => (
             <Reveal key={t} delay={i * 0.06} className="relative bg-panel p-4">
-              <span className="font-display text-[10px] tracking-[0.3em] text-primary">0{i + 1}</span>
+              <span className="font-display text-[11px] tracking-[0.3em] text-primary">0{i + 1}</span>
               <h3 className="mt-2 font-display text-[13px] font-bold uppercase tracking-wider">{t}</h3>
               <p className="mt-2 text-[11px] leading-relaxed text-muted">{d}</p>
               {i < PIPELINE.length - 1 && <span aria-hidden className="absolute -right-2 top-1/2 z-10 hidden -translate-y-1/2 text-primary lg:block">›</span>}

@@ -13,7 +13,7 @@ function Readout({ label, value, tone = "success" }: { label: string; value: Rea
   const c = { success: "text-success", warning: "text-warning", danger: "text-danger", primary: "text-primary", muted: "text-muted" }[tone];
   return (
     <div className="flex flex-col leading-tight">
-      <span className="text-[8px] uppercase tracking-[0.25em] text-muted">{label}</span>
+      <span className="text-[11px] uppercase tracking-[0.25em] text-muted">{label}</span>
       <span className={cn("font-display text-[11px] font-bold tracking-widest tabular-nums", c)}>{value}</span>
     </div>
   );
@@ -54,7 +54,7 @@ export function TopBar() {
         {user && (
           <div className="hidden text-right leading-tight sm:block">
             <div className="text-[11px] text-foreground">{user.display_name}</div>
-            <div className="text-[9px] tracking-[0.25em] text-primary">{user.role}</div>
+            <div className="text-[11px] tracking-[0.25em] text-primary">{user.role}</div>
           </div>
         )}
         <button onClick={logout} className="inline-flex size-8 items-center justify-center border border-border text-muted transition hover:border-danger/60 hover:text-danger" aria-label="Sign out" title="Sign out">

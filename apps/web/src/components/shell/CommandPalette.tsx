@@ -83,8 +83,8 @@ export function CommandPalette() {
 
   if (!open) {
     return (
-      <button onClick={() => setOpen(true)} className="hidden items-center gap-2 border border-border px-2.5 py-1.5 text-[10px] uppercase tracking-widest text-muted transition hover:border-primary hover:text-primary md:inline-flex" aria-label="Open command palette">
-        <Search className="size-3.5" /> Search <kbd className="border border-border px-1 text-[9px]">Ctrl K</kbd>
+      <button onClick={() => setOpen(true)} className="hidden items-center gap-2 border border-border px-2.5 py-1.5 text-[11px] uppercase tracking-widest text-muted transition hover:border-primary hover:text-primary md:inline-flex" aria-label="Open command palette">
+        <Search className="size-3.5" /> Search <kbd className="border border-border px-1 text-[11px]">Ctrl K</kbd>
       </button>
     );
   }
@@ -109,12 +109,12 @@ export function CommandPalette() {
           {results.map((c, i) => (
             <li key={c.id} id={`cmd-${c.id}`} role="option" aria-selected={i === sel} onMouseEnter={() => setActive(i)} onClick={() => go(c)}
               className={cn("flex cursor-pointer items-center justify-between gap-3 px-4 py-2 text-[12px]", i === sel ? "bg-primary/10 text-primary" : "text-foreground")}>
-              <span className="truncate"><span className="mr-2 text-[9px] uppercase tracking-widest text-muted">{c.group}</span>{c.label}</span>
-              {c.hint && <span className="shrink-0 text-[10px] text-muted">{c.hint}</span>}
+              <span className="truncate"><span className="mr-2 text-[11px] uppercase tracking-widest text-muted">{c.group}</span>{c.label}</span>
+              {c.hint && <span className="shrink-0 text-[11px] text-muted">{c.hint}</span>}
             </li>
           ))}
         </ul>
-        <div className="border-t border-border px-4 py-1.5 text-[9px] uppercase tracking-widest text-muted">↑↓ navigate · enter select · esc close</div>
+        <div className="border-t border-border px-4 py-1.5 text-[11px] uppercase tracking-widest text-muted">↑↓ navigate · enter select · esc close</div>
       </div>
     </div>
   );

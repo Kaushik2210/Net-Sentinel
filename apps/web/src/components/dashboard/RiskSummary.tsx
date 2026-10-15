@@ -40,7 +40,7 @@ export function RiskSummary({ devices, selectedId, onSelect, loading }: Props) {
               <button onClick={() => onSelect(d.id)} aria-pressed={d.id === selectedId}
                 className={cn("flex w-full items-center gap-3 border-b border-border/60 px-3 py-2 text-left transition hover:bg-panel-2", d.id === selectedId && "bg-primary/5")}>
                 <span className="w-9 text-right font-display text-sm font-bold tabular-nums">{d.risk_score}</span>
-                <span className="flex-1"><span className="block text-[12px]">{d.hostname}</span><span className="block text-[10px] text-muted">{d.ip} · {d.role}</span></span>
+                <span className="flex-1"><span className="block text-[12px]">{d.hostname}</span><span className="block text-[11px] text-muted">{d.ip} · {d.role}</span></span>
                 <ThreatBadge severity={severityForRisk(d.risk_score)} />
               </button>
             </li>
@@ -53,10 +53,10 @@ export function RiskSummary({ devices, selectedId, onSelect, loading }: Props) {
             <div className="grid grid-cols-[auto_1fr] gap-4">
               <div className="flex flex-col items-center gap-2">
                 <ThreatScore score={shown.risk_score} />
-                <span className="text-[9px] tracking-[0.2em] text-muted">DEV {shown.deviation_score}</span>
+                <span className="text-[11px] tracking-[0.2em] text-muted">DEV {shown.deviation_score}</span>
               </div>
               <div>
-                <div className="mb-2 text-[10px] uppercase tracking-[0.2em] text-primary">Why {shown.hostname} is scored {shown.risk_score}</div>
+                <div className="mb-2 text-[11px] uppercase tracking-[0.2em] text-primary">Why {shown.hostname} is scored {shown.risk_score}</div>
                 <RiskFactors factors={shown.risk_factors} total={shown.risk_score} />
               </div>
             </div>

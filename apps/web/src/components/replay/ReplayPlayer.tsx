@@ -107,13 +107,13 @@ export function ReplayPlayer({ result, autoPlay = false, baseSeconds = DEFAULT_B
 
   const jump = useCallback((dest: number) => { setPlaying(false); setT(Math.min(dur, Math.max(0, dest))); }, [dur]);
   const nextMark = () => jump(result.alerts.map((a) => a.detected_offset_s).filter((x) => x > t + 0.01).sort((a, b) => a - b)[0] ?? dur);
-  const btn = "inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-muted transition hover:border-primary hover:text-primary";
+  const btn = "inline-flex items-center gap-1.5 border border-border px-3 py-1.5 text-[11px] uppercase tracking-[0.2em] text-muted transition hover:border-primary hover:text-primary";
 
   return (
     <div className={cn("grid gap-3", !presentation && "xl:grid-cols-[1fr_340px]")}>
       <div className="space-y-3">
         <CyberCard title="Replay topology" tone="primary" bodyClassName="p-0"
-          actions={<span className="text-[9px] tracking-[0.2em] text-muted">T+{clock(t)} / {clock(dur)}</span>}>
+          actions={<span className="text-[11px] tracking-[0.2em] text-muted">T+{clock(t)} / {clock(dur)}</span>}>
           <svg viewBox={`0 0 ${W} ${H}`} className="w-full bg-black/30" role="img" aria-label="Replay topology at the current time">
             {result.edges.map((e) => {
               const a = pos.get(e.src), b = pos.get(e.dst);
@@ -156,7 +156,7 @@ export function ReplayPlayer({ result, autoPlay = false, baseSeconds = DEFAULT_B
         <CyberCard title="Threat state" tone="danger">
           <div className="flex items-center gap-4">
             <ThreatScore score={frame?.threat ?? 0} label="THREAT" />
-            <dl className="grid flex-1 grid-cols-2 gap-x-3 text-[10px] text-muted">
+            <dl className="grid flex-1 grid-cols-2 gap-x-3 text-[11px] text-muted">
               <dt>Events</dt><dd className="text-right tabular-nums text-foreground">{frame?.events ?? 0}</dd>
               <dt>Alerts</dt><dd className="text-right tabular-nums text-foreground">{detected.length}</dd>
               <dt>Chain steps</dt><dd className="text-right tabular-nums text-foreground">{steps.length}</dd>
@@ -169,7 +169,7 @@ export function ReplayPlayer({ result, autoPlay = false, baseSeconds = DEFAULT_B
               const a = result.alerts.find((x) => x.id === s.alert_id)!;
               return (
                 <li key={s.alert_id}><button onClick={() => setStepSel(s.alert_id)} className={cn("flex w-full items-center gap-2 border-b border-border/60 px-3 py-2 text-left hover:bg-panel-2", selAlert?.id === s.alert_id && "bg-primary/5")}>
-                  <span className="w-4 text-[10px] tabular-nums text-muted">{s.position + 1}</span>
+                  <span className="w-4 text-[11px] tabular-nums text-muted">{s.position + 1}</span>
                   <span className="flex-1 text-[11px]">{s.stage}</span><ThreatBadge severity={a.severity} /></button></li>
               );
             })}</ol>
@@ -177,9 +177,9 @@ export function ReplayPlayer({ result, autoPlay = false, baseSeconds = DEFAULT_B
         </CyberCard>
         {selAlert && (
           <CyberCard title="Detection" tone="info">
-            <div className="mb-1 flex items-center gap-2"><DetectionClassBadge kind={selAlert.detection_class} /><span className="text-[10px] text-muted">{selAlert.mitre.join(" · ")}</span></div>
+            <div className="mb-1 flex items-center gap-2"><DetectionClassBadge kind={selAlert.detection_class} /><span className="text-[11px] text-muted">{selAlert.mitre.join(" · ")}</span></div>
             <p className="text-[11px] leading-relaxed">{selAlert.explanation}</p>
-            <p className="mt-1 text-[10px] text-muted">detected T+{clock(selAlert.detected_offset_s)} · {Math.round(selAlert.confidence * 100)}% conf · {selAlert.evidence_event_ids.length} evidence events</p>
+            <p className="mt-1 text-[11px] text-muted">detected T+{clock(selAlert.detected_offset_s)} · {Math.round(selAlert.confidence * 100)}% conf · {selAlert.evidence_event_ids.length} evidence events</p>
           </CyberCard>
         )}
       </div>

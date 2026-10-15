@@ -91,11 +91,11 @@ export function HeroTopology({ className }: { className?: string }) {
 
   return (
     <div className={cn("panel-edge relative border border-primary/25", className)}>
-      <div className="flex items-center justify-between border-b border-border px-3 py-2 text-[10px] uppercase tracking-[0.2em] text-muted">
+      <div className="flex items-center justify-between border-b border-border px-3 py-2 text-[11px] uppercase tracking-[0.2em] text-muted">
         <span className="flex items-center gap-2"><StatusDot tone={attacking ? "danger" : "success"} /> NETWORK DIGITAL TWIN</span>
         {pwn
           ? <button onClick={() => setPwn(null)} className="border border-primary/60 px-2 py-0.5 text-primary hover:bg-primary hover:text-background">RESET</button>
-          : <span className="hidden sm:inline">CLICK ANY HOST TO ATTACK IT &middot; SIMULATION</span>}
+          : <span className="hidden sm:inline">CLICK A HOST TO ATTACK IT</span>}
       </div>
 
       <svg viewBox="0 0 600 390" className="w-full" role="img" aria-label="Animated network topology moving through normal, anomaly, threat and investigation stages">
@@ -143,14 +143,14 @@ export function HeroTopology({ className }: { className?: string }) {
               ) : (
                 <circle r={big ? 10 : 7} fill="#05070a" stroke={col} strokeWidth="1.5" filter="url(#glow)" />
               )}
-              <text y={big ? 25 : 21} textAnchor="middle" fontSize="8.5" fill={tone === "ok" ? "#6b8594" : col} letterSpacing="1">{n.id}</text>
+              <text y={big ? 25 : 21} textAnchor="middle" fontSize="10" fill={tone === "ok" ? "#8aa4b3" : col} letterSpacing="1">{n.id}</text>
             </g>
           );
         })}
         {phase.id === "INVESTIGATION" && (
           <g transform={`translate(${byId["PC-07"].x},${byId["PC-07"].y})`}>
             <circle r="26" fill="none" stroke="#00e5ff" strokeWidth="1" strokeDasharray="4 4" className="animate-sweep" style={{ transformBox: "fill-box", transformOrigin: "center" }} />
-            <text y="-34" textAnchor="middle" fontSize="8" fill="#00e5ff" letterSpacing="2">EVIDENCE LINKED</text>
+            <text y="-34" textAnchor="middle" fontSize="10" fill="#00e5ff" letterSpacing="2">EVIDENCE LINKED</text>
           </g>
         )}
       </svg>
@@ -159,14 +159,14 @@ export function HeroTopology({ className }: { className?: string }) {
         <div className="flex flex-wrap items-center gap-1" role="list" aria-label="Stage">
           {(pwn ? [] : PHASES).map((p, k) => (
             <span key={p.id} role="listitem" className={cn(
-              "border px-1.5 py-0.5 text-[9px] tracking-[0.18em] transition-colors",
+              "border px-1.5 py-0.5 text-[11px] tracking-[0.18em] transition-colors",
               k === i
                 ? p.id === "NORMAL" ? "border-success/50 text-success" : p.id === "ANOMALY" ? "border-warning/60 text-warning" : p.id === "THREAT" ? "border-danger/60 text-danger" : "border-primary/60 text-primary"
                 : "border-border text-muted/60",
             )}>{p.id}</span>
           ))}
         </div>
-        <div className="flex flex-wrap gap-x-4 text-[10px] tracking-widest text-muted">
+        <div className="flex flex-wrap gap-x-4 text-[11px] tracking-widest text-muted">
           <span>NODES <b className="text-foreground">{NODES.length}</b></span>
           <span>ANOM <b className={anomalies ? "text-warning" : "text-foreground"}>{anomalies}</b></span>
           <span>THREATS <b className={threats ? "text-danger" : "text-foreground"}>{threats}</b></span>

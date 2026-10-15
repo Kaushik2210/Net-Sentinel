@@ -6,7 +6,7 @@ import { Story } from "@/components/landing/Story";
 
 export default function Landing() {
   return (
-    <main className="min-h-screen">
+    <main id="main" className="min-h-screen">
       <BootSequence />
       <Nav />
       <Hero />

@@ -39,7 +39,7 @@ export function Hero() {
       <PacketRain className="[mask-image:radial-gradient(ellipse_at_center,black_20%,transparent_75%)]" intensity={0.45} />
       <div className="relative mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:pt-24">
         <div className="min-w-0">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="mb-6 flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-muted">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="mb-6 flex items-center gap-3 text-[11px] uppercase tracking-[0.3em] text-muted">
             <span className="size-1.5 animate-blink bg-success" /> Network digital twin &middot; v0.1 research build
           </motion.div>
           <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}

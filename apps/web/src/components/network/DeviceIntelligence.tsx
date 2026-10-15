@@ -12,7 +12,7 @@ import { cn, formatBytes, formatClock, timeAgo } from "@/lib/utils";
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="border-b border-border/70 px-4 py-3">
-      <h3 className="mb-2 text-[9px] uppercase tracking-[0.25em] text-primary">{title}</h3>
+      <h3 className="mb-2 text-[11px] uppercase tracking-[0.25em] text-primary">{title}</h3>
       {children}
     </section>
   );
@@ -65,7 +65,7 @@ export function DeviceIntelligence({ deviceId, onClose, onSelect }: Props) {
                 <div className="truncate font-display text-lg font-bold">{ready.hostname}</div>
                 <div className="text-[11px] text-muted">{ready.role}</div>
                 <div className="mt-1.5 flex items-center gap-2"><ThreatBadge severity={ready.risk_severity} />
-                  <span className="flex items-center gap-1.5 text-[10px] text-muted"><StatusDot tone={ready.status === "online" ? "success" : "muted"} pulse={false} />{ready.status}</span></div>
+                  <span className="flex items-center gap-1.5 text-[11px] text-muted"><StatusDot tone={ready.status === "online" ? "success" : "muted"} pulse={false} />{ready.status}</span></div>
               </div>
             </div>
 
@@ -84,7 +84,7 @@ export function DeviceIntelligence({ deviceId, onClose, onSelect }: Props) {
                     const scale = Math.max(m.current, m.baseline_max, 1);
                     return (
                       <div key={m.key}>
-                        <div className="mb-1 flex justify-between text-[10px]">
+                        <div className="mb-1 flex justify-between text-[11px]">
                           <span>{m.label}</span>
                           <span className={m.deviated ? "text-danger" : "text-muted"}>{m.current} <span className="text-muted">/ normal ≤{m.baseline_max}</span></span>
                         </div>
@@ -107,15 +107,15 @@ export function DeviceIntelligence({ deviceId, onClose, onSelect }: Props) {
               {!mlScore ? <p className="text-[11px] text-muted">Insufficient recent events to score this device.</p> : (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="border border-info/40 px-1.5 py-0.5 text-[9px] tracking-widest text-info">ML ANOMALY SCORE</span>
+                    <span className="border border-info/40 px-1.5 py-0.5 text-[11px] tracking-widest text-info">ML ANOMALY SCORE</span>
                     <span className={mlScore.is_anomaly ? "text-danger" : "text-success"}>{mlScore.risk}/100 · {mlScore.is_anomaly ? "outlier" : "within baseline"}</span>
                   </div>
-                  <ul className="space-y-0.5 text-[10px]">
+                  <ul className="space-y-0.5 text-[11px]">
                     {mlScore.contributions.map((c) => (
                       <li key={c.feature} className="flex justify-between gap-2"><span className="text-muted">{c.label}</span><span>{c.value} <span className="text-muted">(baseline {c.baseline_mean}, z {c.z > 0 ? "+" : ""}{c.z})</span></span></li>
                     ))}
                   </ul>
-                  <p className="text-[10px] text-muted">{mlScore.note}</p>
+                  <p className="text-[11px] text-muted">{mlScore.note}</p>
                 </div>
               )}
             </Block>
@@ -140,7 +140,7 @@ export function DeviceIntelligence({ deviceId, onClose, onSelect }: Props) {
 
             <Block title="Recent events">
               {ready.recent_events.length === 0 ? <p className="text-[11px] text-muted">No recent events for this address.</p> : (
-                <ul className="space-y-0.5 font-mono text-[10px]">
+                <ul className="space-y-0.5 font-mono text-[11px]">
                   {ready.recent_events.map((e) => (
                     <li key={e.id} className="grid grid-cols-[3.8rem_1fr] gap-2"><span className="tabular-nums text-muted">{formatClock(e.ts)}</span><span className="truncate">{e.event_type} <span className="text-muted">{e.src_ip}›{e.dst_ip}</span></span></li>
                   ))}

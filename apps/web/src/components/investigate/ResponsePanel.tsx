@@ -33,16 +33,16 @@ export function ResponsePanel({ incidentId }: { incidentId: string }) {
 
   return (
     <div className="space-y-3">
-      <p className="border border-warning/30 bg-warning/5 px-2 py-1 text-[10px] uppercase tracking-[0.18em] text-warning">Recommendations only · safe simulation · no real changes are made</p>
+      <p className="border border-warning/30 bg-warning/5 px-2 py-1 text-[11px] uppercase tracking-[0.18em] text-warning">Recommendations only · safe simulation · no real changes are made</p>
       {error && <p role="alert" className="text-[11px] text-danger">{error}</p>}
       {!recs ? <p className="text-[11px] text-muted">Deriving recommendations…</p> : recs.length === 0 ? <p className="text-[11px] text-muted">Insufficient evidence to recommend a response.</p> : (
         <ul className="space-y-3">{recs.map((r) => (
           <li key={r.id} className="border border-border p-2.5">
             <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0"><div className="text-[9px] uppercase tracking-[0.2em] text-muted">{r.action.replaceAll("_", " ")}</div><div className="break-all text-[12px] text-foreground">{r.target}</div></div>
-              {canSim && <button disabled={busy === r.id} onClick={() => simulate(r)} className={cn("shrink-0 border px-2 py-1 text-[9px] uppercase tracking-[0.15em] transition disabled:opacity-40", r.state === "simulated" ? "border-success/50 text-success" : "border-primary/60 text-primary hover:bg-primary hover:text-background")}>[ {r.label} ]</button>}
+              <div className="min-w-0"><div className="text-[11px] uppercase tracking-[0.2em] text-muted">{r.action.replaceAll("_", " ")}</div><div className="break-all text-[12px] text-foreground">{r.target}</div></div>
+              {canSim && <button disabled={busy === r.id} onClick={() => simulate(r)} className={cn("shrink-0 border px-2 py-1 text-[11px] uppercase tracking-[0.15em] transition disabled:opacity-40", r.state === "simulated" ? "border-success/50 text-success" : "border-primary/60 text-primary hover:bg-primary hover:text-background")}>[ {r.label} ]</button>}
             </div>
-            <p className="mt-1 text-[10px] leading-relaxed text-muted">{r.rationale}</p>
+            <p className="mt-1 text-[11px] leading-relaxed text-muted">{r.rationale}</p>
             {outcome[r.id] && <p className="mt-1.5 border-l border-success/60 pl-2 text-[11px] font-bold text-success">{outcome[r.id]}</p>}
           </li>))}</ul>
       )}

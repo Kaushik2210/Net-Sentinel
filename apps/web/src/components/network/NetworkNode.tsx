@@ -36,9 +36,9 @@ export function NetworkNode({ data }: NodeProps<NetNode>) {
       <Handle type="target" position={Position.Top} className={hidden} />
       {risky && <span className="absolute -right-1 -top-1 size-2 animate-pulse-ring rounded-full" style={{ background: color }} />}
       <Icon className="mx-auto size-4" style={{ color: risky ? color : "#6b8594" }} />
-      <div className="mt-0.5 truncate text-[10px] font-medium text-foreground">{d.hostname}</div>
-      <div className="truncate text-[8px] text-muted">{d.ip}</div>
-      <div className="mt-1 flex items-center justify-between text-[8px] tabular-nums text-muted">
+      <div className="mt-0.5 truncate text-[11px] font-medium text-foreground">{d.hostname}</div>
+      <div className="truncate text-[11px] text-muted">{d.ip}</div>
+      <div className="mt-1 flex items-center justify-between text-[11px] tabular-nums text-muted">
         <span style={{ color: risky ? color : undefined }}>R{d.risk_score}</span>
         <span>{d.connection_count}↔</span>
       </div>

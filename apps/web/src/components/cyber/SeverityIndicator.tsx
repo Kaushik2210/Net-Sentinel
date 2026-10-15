@@ -16,7 +16,7 @@ export function SeverityIndicator({ severity, showLabel = true }: { severity: Se
           />
         ))}
       </span>
-      {showLabel && <span className={cn("text-[10px] tracking-widest", s.text)}>{s.label}</span>}
+      {showLabel && <span className={cn("text-[11px] tracking-widest", s.text)}>{s.label}</span>}
     </span>
   );
 }
