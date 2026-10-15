@@ -67,7 +67,7 @@ export default function ReplayPage() {
       </div>
       {error && <p role="alert" className="border border-danger/40 bg-danger/10 px-3 py-2 text-[12px] text-danger">{error}</p>}
 
-      <div className="grid gap-3 xl:grid-cols-[260px_1fr]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 xl:grid-cols-[260px_minmax(0,1fr)]">
         <CyberCard title="Sessions" tone="muted" bodyClassName="p-0" className="xl:self-start">
           {!sessions ? <p className="p-4 text-[11px] text-muted">Loading…</p> : sessions.length === 0 ? (
             <p className="p-4 text-[11px] leading-relaxed text-muted">No replays yet.{canWrite ? " Run the synthetic sample to see the pipeline, or upload a capture." : " An analyst can create one."}</p>

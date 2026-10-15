@@ -65,7 +65,7 @@ export default function ResearchPage() {
         <CyberCard><p className="py-8 text-center text-[12px] text-muted">No evaluation has been run yet.{canRun ? " Run it to compare rule-based, ML and hybrid detection." : " An analyst can run it."}</p></CyberCard>
       ) : (
         <>
-          <div className="grid gap-3 xl:grid-cols-[1.3fr_1fr]">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
             <CyberCard title="Rule vs ML vs hybrid" tone="primary" bodyClassName="p-0">
               <div className="overflow-x-auto"><table className="w-full text-[11px]">
                 <thead><tr className="border-b border-border text-[11px] uppercase tracking-widest text-muted"><th className="px-3 py-2 text-left">Method</th><th>Precision</th><th>Recall</th><th>F1</th><th>FPR</th><th>Latency (median)</th></tr></thead>
@@ -116,7 +116,7 @@ export default function ResearchPage() {
 
       <CyberCard title="Dataset support" tone="muted" bodyClassName="p-0">
         <ul>{data?.supported_datasets.map((d) => (
-          <li key={d.name} className="grid grid-cols-[12rem_10rem_1fr] gap-3 border-b border-border/60 px-3 py-2 text-[11px]"><span>{d.name}</span><span className={d.status === "available" ? "text-success" : "text-muted"}>{d.status}</span><span className="text-muted">{d.note}</span></li>))}</ul>
+          <li key={d.name} className="grid grid-cols-1 gap-x-3 gap-y-0.5 sm:grid-cols-[12rem_10rem_1fr] border-b border-border/60 px-3 py-2 text-[11px]"><span>{d.name}</span><span className={d.status === "available" ? "text-success" : "text-muted"}>{d.status}</span><span className="text-muted">{d.note}</span></li>))}</ul>
       </CyberCard>
     </div>
   );

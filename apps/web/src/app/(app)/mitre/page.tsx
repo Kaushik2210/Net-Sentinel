@@ -45,7 +45,7 @@ export default function MitrePage() {
   const shown = detail && detail.id === selected ? detail : null;
 
   return (
-    <div className="grid gap-3 xl:grid-cols-[1fr_380px]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-3 xl:grid-cols-[minmax(0,1fr)_380px]">
       <ParamSync name="technique" onValue={onTechnique} />
       <div className="min-w-0 space-y-3">
         <div className="flex flex-wrap items-center gap-3">

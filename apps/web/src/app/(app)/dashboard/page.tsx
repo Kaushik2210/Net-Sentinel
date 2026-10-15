@@ -29,13 +29,13 @@ export default function Dashboard() {
         </div>
       )}
       <MetricsRow summary={summary} />
-      <div className="grid gap-3 xl:grid-cols-[1.6fr_1fr]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <div className="h-[440px] xl:h-[500px]">
           <TopologyPreview topology={topology} selectedId={active} onSelect={setSelected} loading={loading} error={error} onRetry={reload} />
         </div>
         <RiskSummary devices={topRisk} selectedId={active} onSelect={setSelected} loading={loading} />
       </div>
-      <div className="grid gap-3 xl:grid-cols-[1.6fr_1fr]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 xl:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
         <EventStream events={live.events} status={live.status} loaded={live.loaded} error={live.error} source={summary?.mode === "SIMULATION" ? "simulation" : undefined} />
         <div className="grid gap-3">
           <ThreatOverview topology={topology} />

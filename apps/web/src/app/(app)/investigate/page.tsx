@@ -37,7 +37,7 @@ export default function InvestigatePage() {
     <div className="space-y-3">
       <ParamSync name="incident" onValue={onIncident} />
       {error && <p role="alert" className="border border-danger/40 bg-danger/10 px-3 py-2 text-[12px] text-danger">{error}</p>}
-      <div className="grid gap-3 xl:grid-cols-[260px_1fr_380px]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 xl:grid-cols-[260px_minmax(0,1fr)_380px]">
         <CyberCard title="Incident queue" tone="danger" bodyClassName="p-0" className="xl:self-start">
           {!list ? <p className="p-4 text-[11px] text-muted">Loading…</p> : list.length === 0 ? <p className="p-4 text-[11px] leading-relaxed text-muted">Nothing to investigate. Correlated incidents appear here.</p> : (
             <ul>{list.map((i) => (

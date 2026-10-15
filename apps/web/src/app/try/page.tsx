@@ -104,7 +104,7 @@ export default function TryPage() {
         {error && <p role="alert" className="border border-danger/40 bg-danger/10 px-3 py-2 text-[12px] text-danger">{error}</p>}
 
         {opts && (
-          <div className="grid gap-3 lg:grid-cols-[1fr_1.2fr]">
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-3 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
             <CyberCard title="1 · Scenario" tone="primary">
               <div role="radiogroup" aria-label="Scenario" className="space-y-1.5">
                 {opts.scenarios.map((s) => (

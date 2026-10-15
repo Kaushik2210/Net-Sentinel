@@ -43,7 +43,7 @@ export default function IncidentsPage() {
   const current = shown?.steps.find((s) => s.position === step) ?? shown?.steps[0];
 
   return (
-    <div className="grid gap-3 xl:grid-cols-[280px_1fr_360px]">
+    <div className="grid grid-cols-[minmax(0,1fr)] gap-3 xl:grid-cols-[280px_minmax(0,1fr)_360px]">
       <CyberCard title="Incidents" tone="danger" bodyClassName="p-0" className="xl:self-start">
         {listError ? <p className="p-4 text-[12px] text-danger">{listError}</p>
           : !list ? <p className="p-4 text-[11px] text-muted">Loading…</p>

@@ -45,7 +45,7 @@ export default function ThreatIntelPage() {
       </p>
       {error && <p role="alert" className="border border-danger/40 bg-danger/10 px-3 py-2 text-[12px] text-danger">{error}</p>}
 
-      <div className="grid gap-3 xl:grid-cols-[1.4fr_1fr]">
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-3 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
         <CyberCard title="Indicators" tone="info" bodyClassName="p-0"
           actions={<select value={filter} onChange={(e) => setFilter(e.target.value)} aria-label="Filter by kind" className="border border-border bg-black/60 px-1.5 py-0.5 text-[11px]"><option value="">all</option>{KINDS.map((k) => <option key={k}>{k}</option>)}</select>}>
           {canWrite && (
